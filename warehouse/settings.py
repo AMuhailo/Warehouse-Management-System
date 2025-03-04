@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import os
 import dj_database_url
 from pathlib import Path
+
 from environ import Env
 
 env = Env()
@@ -127,6 +128,10 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR ,'static')]
 
 # Create user abstract
 AUTH_USER_MODEL = 'employees.User'
+
+# Create email
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
