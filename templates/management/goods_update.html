@@ -1,0 +1,5 @@
+<form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value='update'>
+</form>

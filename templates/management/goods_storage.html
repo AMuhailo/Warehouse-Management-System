@@ -1,0 +1,11 @@
+{% for category_goods in categories %}
+    {{ category_goods.name }}
+{% endfor %}
+
+
+{% for good in goods %}
+    {{ good.id}}
+    {{ good.title }}
+    {{ good.box}}
+    {{ good.price }}
+{% endfor %}
