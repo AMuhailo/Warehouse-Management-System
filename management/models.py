@@ -20,19 +20,18 @@ class Goods(models.Model):
     image = models.ImageField(upload_to = 'goods/', blank = True, null = True)
     title = models.CharField(max_length = 255)
     slug = models.SlugField(max_length = 255, blank = True)
-    box = models.PositiveIntegerField(default=0)
-    quantity = models.PositiveIntegerField(blank = True, null = True)
-    price = models.DecimalField(max_digits = 10, decimal_places = 2)
+    quantity = models.PositiveIntegerField(default = 0)
+    price = models.DecimalField(max_digits = 10, decimal_places = 2, help_text='Unit price')
     in_stock = models.BooleanField(default = False)
-    provider = models.ForeignKey('Provider', on_delete = models.CASCADE, related_name = 'goods_provider')
+    provider = models.ForeignKey('Provider', on_delete = models.SET_NULL, blank = True, null = True, related_name = 'goods_provider')
 
     imported = models.DateTimeField(default = timezone.now)  
     added = models.DateTimeField(auto_now_add = True)
     updated = models.DateTimeField(auto_now = True)
     
     class Meta:
-        ordering = ['-added','-box']
-        indexes = [models.Index(fields=['-box','-quantity']),
+        ordering = ['-added','-quantity']
+        indexes = [models.Index(fields=['-quantity']),
                     models.Index(fields = ['-added']),
                     models.Index(fields = ['id'])]
         
@@ -40,7 +39,27 @@ class Goods(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         return super().save(*args, **kwargs)
-        
+    
+    def decrease(self, quantity):
+        if self.quantity >= quantity:
+            self.quantity -= quantity
+            if self.quantity <= 0:
+                self.in_stock = False
+            else:
+                self.in_stock = True
+            self.save()
+            return True
+        return False
+    
+    def increase(self, quantity):
+        self.quantity += quantity
+        if self.quantity > 0:
+            self.in_stock = True
+        self.save()
+
+    def full_price(self):
+        return self.price * self.quantity
+
     def __str__(self):
         return self.title
     

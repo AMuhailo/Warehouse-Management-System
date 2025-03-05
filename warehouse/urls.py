@@ -25,5 +25,6 @@ urlpatterns = [
     path('register/',RegisterCreateView.as_view(), name = 'register'),
     path('admin/', admin.site.urls),
     path('employees/', include('employees.urls', namespace = 'emp')),
+    path('orders/', include('orders.urls', namespace = 'ord')),
     path('management/', include('management.urls', namespace = 'manage')),
 ]

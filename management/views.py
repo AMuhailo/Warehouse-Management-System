@@ -21,7 +21,7 @@ class GoodsStockMixin(GoodsURLMixin):
     def form_valid(self, form):
         cd = form.cleaned_data
         goods = form.save(commit=False)
-        if cd['box'] > 0:
+        if cd['quantity'] > 0:
             goods.in_stock = True
         else:
             goods.in_stock = False
@@ -43,7 +43,7 @@ class GoodsStorageListView(ListView):
     context_object_name = 'goods'    
     template_name = "management/goods_storage.html"
     def get_queryset(self):
-        goods = Goods.objects.only('id','title','box','price').filter(Q(in_stock = True) & ~Q(box = 0))
+        goods = Goods.objects.only('id','title','box','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
         category_slug = self.kwargs.get('category_slug')
         category_id = self.kwargs.get('category_id')
         if category_slug and category_id:
@@ -67,7 +67,7 @@ class GoodsNotStockListView(ListView):
     model = Goods
     context_object_name = 'goods'    
     template_name = "management/goods_not_storage.html"
-    queryset =  Goods.objects.only('id','title','box','price').filter(Q(in_stock = False) | Q(box = 0))
+    queryset =  Goods.objects.only('id','title','box','price').filter(Q(in_stock = False) | Q(quantity = 0))
 
 
 class GoodsUpdateView(GoodsStockMixin, UpdateView):
