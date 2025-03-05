@@ -2,14 +2,40 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView
 from management.models import Category, Goods
-from management.forms import GoodsUpdateForm
+from management.forms import GoodsCreateForm, GoodsUpdateForm
 from django.db.models import Q
 
 # Create your views here.
-class GoodsCreateView(CreateView):
+class GoodsDataMixin:
     model = Goods
-    template_name = "management/goodscreate.html"
-    success_url = reverse_lazy('manage:')
+    success_url = reverse_lazy('manage:goods_storage_url')
+
+
+class GoodsURLMixin(GoodsDataMixin):
+    context_object_name = 'good'
+    slug_url_kwarg = 'goods_slug'
+    pk_url_kwarg = 'goods_pk'
+    
+    
+class GoodsStockMixin(GoodsURLMixin):
+    def form_valid(self, form):
+        cd = form.cleaned_data
+        goods = form.save(commit=False)
+        if cd['box'] > 0:
+            goods.in_stock = True
+        else:
+            goods.in_stock = False
+        goods.save()
+        return super().form_valid(form)
+
+
+
+class GoodsCreateView(GoodsStockMixin, CreateView):
+    template_name = "management/goods_create.html"
+    form_class = GoodsCreateForm
+    
+    def form_valid(self, form):
+        return super().form_valid(form)
     
     
 class GoodsStorageListView(ListView):
@@ -44,22 +70,10 @@ class GoodsNotStockListView(ListView):
     queryset =  Goods.objects.only('id','title','box','price').filter(Q(in_stock = False) | Q(box = 0))
 
 
-class GoodsUpdateView(UpdateView):
-    model = Goods
+class GoodsUpdateView(GoodsStockMixin, UpdateView):
     form_class = GoodsUpdateForm
-    context_object_name = 'good'
-    slug_url_kwarg = 'goods_slug'
-    pk_url_kwarg = 'goods_pk'
-    success_url = reverse_lazy('manage:goods_storage_url')
     template_name = 'management/goods_update.html'
-
-    def form_valid(self, form):
-        cd = form.cleaned_data['box']
-        goods = form.save(commit=False)
-        if cd > 0:
-            goods.in_stock = True
-        else:
-            goods.in_stock = False
-        goods.save()
-        return super().form_valid(form)
     
+
+class GoodsDeleteView(GoodsURLMixin, DeleteView):
+    template_name = 'management/goods_delete.html'

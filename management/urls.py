@@ -9,4 +9,5 @@ urlpatterns = [
     path('storage/not-stock/', views.GoodsNotStockListView.as_view(), name = 'goods_notstock_url'),
     path('goods/created/', views.GoodsCreateView.as_view(), name = 'goods_created_url'),
     path('goods/updated/<goods_slug>/<goods_pk>/', views.GoodsUpdateView.as_view(), name = 'goods_updated_url'),
+    path('goods/delete/<goods_slug>/<goods_pk>/', views.GoodsDeleteView.as_view(), name = 'goods_delete_url')
 ]
