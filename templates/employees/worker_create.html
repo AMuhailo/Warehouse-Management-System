@@ -1,0 +1,5 @@
+<form action = "{% url 'emp:worder_create_url'%}" method = 'POST'>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type='submit' value="Add Worker"/>
+</form>

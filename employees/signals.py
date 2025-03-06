@@ -9,5 +9,4 @@ User = get_user_model()
 def profile_create(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user = instance)
-
-
+    

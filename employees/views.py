@@ -1,9 +1,9 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView
-from employees.forms import RegisterForm, UserForm, ProfileForm
-from employees.models import Profile
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView
+from employees.forms import RegisterForm, WorkerCreateForm
+from employees.models import Profile, Worker, Manager
 # Create your views here
 
 User = get_user_model()
@@ -20,22 +20,28 @@ class RegisterCreateView(CreateView):
         new_employeer.set_password(password)
         new_employeer.save()
         return super().form_valid(form)
+    
 
+class WorkerListView(ListView):
+    model = Worker
+    context_object_name = 'workers'
+    template_name = "employees/worker_list.html"
+    
+    def get_queryset(self):
+        user = self.request.user
+        return self.model.objects.filter(organisation = user.profiles)
+    
 
-class ProfileUpdateView(UpdateView):
-    model = Profile
-    form_class =  UserForm
-    template_name = "registration/profileupdate.html"
-    success_url = reverse_lazy('login')
+class WorkerCreateView(CreateView):
+    model = Worker
+    context_object_name = 'worker'
+    form_class = WorkerCreateForm
+    template_name = 'employees/worker_create.html'
+    success_url = reverse_lazy('emp:worker_list_url')
     
-    def get_object(self, queryset = ...):
-        return User.objects.get(username = self.kwargs.get('username'))
-    
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["user_form"] = self.form_class(instance = self.get_object())
-        context["profile_form"] = ProfileForm(data = self.request.GET , instance = self.get_object().profiles ,files = self.request.FILES)
-        return context
-    
+    def form_valid(self, form):
+        worker = form.save(commit=False)
+        worker.organisation = self.request.user.profiles
+        worker.save()
+        return super().form_valid(form)
     

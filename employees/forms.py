@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import Profile
+from .models import Profile, Worker
 
 User = get_user_model()
 
@@ -18,13 +18,8 @@ class RegisterForm(forms.ModelForm):
             raise forms.ValidationError('Password don`t similar.Please repeat!')
         return cd['password']
     
-class UserForm(forms.ModelForm):
-    class Meta:
-        model = User
-        fields = ['first_name','last_name','email']
         
-class ProfileForm(forms.ModelForm):
+class WorkerCreateForm(forms.ModelForm):
     class Meta:
-        model = Profile
-        fields = ['image','birthday']
-        
+        model = Worker
+        exclude = ['organisation','category']

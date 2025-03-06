@@ -1,0 +1,39 @@
+<nav class="navbar navbar-expand-lg bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-lg ">
+        <a class="navbar-brand" href="#"><i class="bi bi-dropbox"></i> Warehome</a>
+        <div class="ms-auto d-flex gap-2">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto gap-2">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Storage</a>
+                </li>
+                {% if request.user.is_worker %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Completed</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Out of stock</a>
+                    </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link text-white">Worker: User12345678</a>
+                </li>
+            </ul>
+        </div>
+        {% if request.user.is_authenticated %}
+            <form action="{% url 'logout'%}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-outline-primary">Logout</button>
+            </form>
+        {% else %}
+            <form action="{% url 'login'%}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-primary">Login</button>
+            </form>
+        {% endif %}
+    </div>
+</nav>
