@@ -1,6 +1,6 @@
 import qrcode
-from django.db import models
 from io import BytesIO
+from django.db import models
 from django.core.files.base import ContentFile
 from django.contrib.auth import get_user_model
 from django.utils.text import slugify

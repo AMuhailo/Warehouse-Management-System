@@ -135,6 +135,14 @@ AUTH_USER_MODEL = 'employees.User'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 
+#Celery worker
+CELERY_TIMEZONE = "Australia/Tasmania"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_BROCKER_CONNECTION_RETRY_ON_STARTUP = True
+CELERY_TIMEZONE = "UTC"
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

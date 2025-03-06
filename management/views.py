@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from management.models import Category, Goods
+from management.tasks import replenish_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm
 from django.db.models import Q
 
@@ -90,5 +91,7 @@ def scan_goods(request, goods_slug, goods_pk, action):
         good.quantity +=1
     elif action == 'remove' and good.quantity > 0:
         good.quantity -=1
+        replenish_goods.delay(good.id)
+        
     good.save()
     return JsonResponse({"massage":f"Product {good.title} updated","quantity":good.quantity})

@@ -2,6 +2,7 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from management.models import Goods
 from orders.models import  Order, OrderItem
+from management.tasks import replenish_goods
 # Create your views here.
 
 def create_order(request):
@@ -16,6 +17,8 @@ def create_order(request):
         
         if good.decrease(quantity):
             OrderItem.objects.create(order, good, quantity)
+            if good.quantity <= 5:
+                replenish_goods.delay(good.id )
         else:
             return JsonResponse({"error":f"Not enough {good.title} in stock"})
     request.session['cart'] = {}
