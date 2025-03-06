@@ -8,6 +8,10 @@ from management.forms import GoodsCreateForm, GoodsUpdateForm
 from django.db.models import Q
 
 # Create your views here.
+class GoodsListMixin:
+    model = Goods
+    context_object_name = 'goods'
+
 class GoodsDataMixin:
     model = Goods
     success_url = reverse_lazy('manage:goods_storage_url')
@@ -40,34 +44,12 @@ class GoodsCreateView(GoodsStockMixin, CreateView):
         return super().form_valid(form)
     
     
-class GoodsStorageListView(ListView):
-    model = Goods
-    context_object_name = 'goods'    
+class GoodsStorageListView(GoodsListMixin, ListView):  
     template_name = "management/goods_storage.html"
-    def get_queryset(self):
-        goods = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
-        category_slug = self.kwargs.get('category_slug')
-        category_id = self.kwargs.get('category_id')
-        if category_slug and category_id:
-            self.category = get_object_or_404(Category, 
-                                         slug = category_slug, 
-                                         id = category_id)
-            goods = goods.filter(category = self.category)
-        else:
-            self.category = None
-        return goods
+    queryset = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
     
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["categories"] = Category.objects.all()
-        context["category"] = self.category
-        return context
-    
-    
-class GoodsNotStockListView(ListView):
-    model = Goods
-    context_object_name = 'goods'    
+class GoodsNotStockListView(GoodsListMixin, ListView):   
     template_name = "management/goods_not_storage.html"
     queryset =  Goods.objects.only('id','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
 

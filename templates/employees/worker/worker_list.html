@@ -1,5 +1,52 @@
-{% for worker in workers %}
-    {{ worker.first_name }}
-    {{ worker.last_name }}
-    {{ worker.category }}
-{% endfor %}
+{% extends "base.html" %}
+{% block title %} Worker {% endblock title %}
+{% block content %}
+<div class="row">
+    {% include "include/asidebar.html" %}
+    <div class="col-sm-10">
+        <div class="mx-2 d-flex align-items-center w-75">
+            <h4 class="d-flex flex-column">
+                Workers' panel
+                <span>
+                    <a href='' class='display-6 fs-6 text-secondary text-decoration-none'>
+                        View worker
+                    </a>
+                </span>
+            </h4>
+            <a href="{% url 'emp:worder_create_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
+                Add worker
+            </a>
+        </div>
+        <div class="w-75">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>   
+                        <th scope="col">First name</th>
+                        <th scope="col">Last name</th>
+                        <th scope="col">Age</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Number phone</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Code</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for worker in workers %}
+                    <tr>
+                        <th scope="row"><i class="bi bi-person-fill-up"></i></th>
+                        <th scope="row">{{ worker.user.first_name }}</th>
+                        <td>{{ worker.user.last_name }}</td>
+                        <td>{{ worker.age }}</td>
+                        <td>{{ worker.email }}</td>
+                        <td>{{ worker.phone }}</td>
+                        <td>{{ worker.city }}</td>
+                        <td>{{ worker.code }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

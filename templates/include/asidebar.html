@@ -1,16 +1,20 @@
 <div class="col-sm-2">
     <ul class="nav flex-column gap-2">
         <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Active</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'manage:goods_storage_url'%}">Storage</a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Link</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-        </li>
+        {% if  request.user.is_manager or request.user.is_chief%}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manage:goods_notstock_url' %}">Not in stock</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'emp:worker_list_url'%}">Worker</a>
+            </li>
+        {% endif %}
+        {% if  request.user.is_chief %}
+            <li class="nav-item">
+                <a class="nav-link" href="#">Manager</a>
+            </li>
+        {% endif %}
     </ul>
 </div>

@@ -8,6 +8,15 @@ from employees.models import Category, Profile, Worker, Manager
 
 User = get_user_model()
 
+
+""" MIXIN """
+class WorkerDataMixin:
+    model = Worker
+    context_object_name = 'worker'
+    success_url = reverse_lazy('emp:worker_list_url')
+    pk_url_kwarg = 'worker_pk'
+    
+    
 class RegisterCreateView(CreateView):
     model = User
     form_class = RegisterForm
@@ -18,6 +27,8 @@ class RegisterCreateView(CreateView):
         password = form.cleaned_data['password']
         new_employeer = form.save(commit = False)
         new_employeer.set_password(password)
+        new_employeer.is_chief = False
+        new_employeer.is_manager = False
         new_employeer.save()
         return super().form_valid(form)
     
@@ -29,35 +40,37 @@ class WorkerListView(ListView):
     
     def get_queryset(self):
         user = self.request.user
-        return self.model.objects.filter(organisation = user.profiles)
+        if user.is_chief:
+            queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False)
+        else:
+            queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False)
+            queryset = queryset.filter(manager__user = user, city = user.manager_user.city)
+        return queryset
     
 
-class WorkerCreateView(CreateView):
-    model = Worker
-    context_object_name = 'worker'
+class WorkerCreateView(WorkerDataMixin, CreateView):
     form_class = WorkerCreateForm
     template_name = 'employees/worker/worker_create.html'
-    success_url = reverse_lazy('emp:worker_list_url')
     
     def form_valid(self, form):
+        user = self.request.user
         category = get_object_or_404(Category, title = 'worker')
         worker = form.save(commit = False)
-        worker.organisation = self.request.user.profiles
+        
+        if user.is_manager:
+            worker.organisation = user.manager_user.organisation
+            worker.manager = user.manager_user.user
+        else:
+            worker.organisation = user.profiles
+            
         worker.category = category
         worker.save()
         return super().form_valid(form)
     
 
-class WorkerDetailView(DetailView):
-    model = Worker
-    context_object_name = 'worker'
-    pk_url_kwarg = 'worker_pk'
+class WorkerDetailView(WorkerDataMixin, DetailView):
     template_name = "employees/worker/worker_detail.html"
     
-
-class WorkerDeleteView(DeleteView):
-    model = Worker
-    context_object_name = 'worker'
-    pk_url_kwarg = 'worker_pk'
+class WorkerDeleteView(WorkerDataMixin, DeleteView):
     template_name = "employees/worker/worker_delete.html"
-    success_url = reverse_lazy('emp:worker_list_url')
+
