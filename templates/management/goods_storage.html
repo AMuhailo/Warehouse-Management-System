@@ -5,7 +5,6 @@
 
 {% for good in goods %}
     {{ good.id}}
-    {{ good.title }}
-    {{ good.box}}
+    <a href="{{ good.get_absolute_url }}">{{ good.title }}</a>
     {{ good.price }}
 {% endfor %}

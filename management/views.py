@@ -1,6 +1,7 @@
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from management.models import Category, Goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm
 from django.db.models import Q
@@ -43,7 +44,7 @@ class GoodsStorageListView(ListView):
     context_object_name = 'goods'    
     template_name = "management/goods_storage.html"
     def get_queryset(self):
-        goods = Goods.objects.only('id','title','box','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
+        goods = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
         category_slug = self.kwargs.get('category_slug')
         category_id = self.kwargs.get('category_id')
         if category_slug and category_id:
@@ -67,7 +68,7 @@ class GoodsNotStockListView(ListView):
     model = Goods
     context_object_name = 'goods'    
     template_name = "management/goods_not_storage.html"
-    queryset =  Goods.objects.only('id','title','box','price').filter(Q(in_stock = False) | Q(quantity = 0))
+    queryset =  Goods.objects.only('id','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
 
 
 class GoodsUpdateView(GoodsStockMixin, UpdateView):
@@ -77,3 +78,17 @@ class GoodsUpdateView(GoodsStockMixin, UpdateView):
 
 class GoodsDeleteView(GoodsURLMixin, DeleteView):
     template_name = 'management/goods_delete.html'
+    
+    
+class GoodsDetailView(GoodsURLMixin, DetailView):
+    template_name = "management/goods_detail.html"
+    
+    
+def scan_goods(request, goods_slug, goods_pk, action):
+    good = get_object_or_404(Goods, slug = goods_slug, id = goods_pk)
+    if action == 'add':
+        good.quantity +=1
+    elif action == 'remove' and good.quantity > 0:
+        good.quantity -=1
+    good.save()
+    return JsonResponse({"massage":f"Product {good.title} updated","quantity":good.quantity})
