@@ -26,10 +26,8 @@ class Category(models.Model):
     
     
 class Worker(models.Model):
-    first_name = models.CharField(max_length = 100)
-    last_name = models.CharField(max_length = 100)
-    birthday = models.PositiveIntegerField(default = 0)
-    email = models.EmailField(blank = True, null = True)
+    user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = 'worker_user')
+    age = models.PositiveIntegerField(default = 0)
     phone = models.CharField(max_length = 20)
     city = models.CharField(max_length = 100)
     code = models.CharField(max_length=10)
@@ -38,10 +36,10 @@ class Worker(models.Model):
     manager = models.ForeignKey('Manager', on_delete = models.SET_NULL, null = True, blank = True, related_name = 'worker_manager')
     
     class Meta:
-        ordering = ['-id', '-birthday']
+        ordering = ['-id', '-age']
     
     def __str__(self):
-        return f"{self.last_name} {self.first_name}"
+        return f"{self.user.last_name} {self.user.first_name}"
 
 
 class Manager(models.Model):

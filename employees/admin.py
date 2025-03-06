@@ -13,9 +13,9 @@ class ProfileAdmin(admin.ModelAdmin):
     
 @admin.register(Worker)
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ['first_name', 'last_name', 'birthday', 'email', 'phone','city','code','organisation','manager']
+    list_display = ['user', 'age', 'phone','city','code','organisation','manager']
     list_filter = ['city','organisation','manager']
-    search_fields = [ 'first_name', 'last_name','phone','city']
+    search_fields = ['city']
     
 
 @admin.register(Manager)
