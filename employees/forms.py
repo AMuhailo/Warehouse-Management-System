@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import Profile, Worker
+from .models import Manager, Profile, Worker
 
 User = get_user_model()
 
@@ -23,3 +23,13 @@ class WorkerCreateForm(forms.ModelForm):
     class Meta:
         model = Worker
         exclude = ['organisation','category']
+    
+
+class AsignWorkerManager(forms.Form):
+    manager = forms.ModelChoiceField(queryset = Manager.objects.none())
+
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        manager = Manager.objects.filter(organisation = request.user.profiles)
+        super(AsignWorkerManager, self).__init__(*args, **kwargs)
+        self.fields['manager'].queryset = manager

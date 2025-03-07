@@ -26,7 +26,8 @@ class Category(models.Model):
     
     
 class Worker(models.Model):
-    user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = 'worker_user')
+    first_name = models.CharField(max_length = 20)
+    last_name = models.CharField(max_length = 20)
     age = models.PositiveIntegerField(default = 0)
     phone = models.CharField(max_length = 20)
     city = models.CharField(max_length = 100)
@@ -39,7 +40,7 @@ class Worker(models.Model):
         ordering = ['-id', '-age']
     
     def __str__(self):
-        return f"{self.user.last_name} {self.user.first_name}"
+        return f"{self.last_name} {self.first_name}"
 
 
 class Manager(models.Model):

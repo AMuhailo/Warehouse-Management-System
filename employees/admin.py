@@ -13,10 +13,10 @@ class ProfileAdmin(admin.ModelAdmin):
     
 @admin.register(Worker)
 class WorkerAdmin(admin.ModelAdmin):
-    list_display = ['user', 'age', 'phone','city','code','organisation','manager']
+    list_display = ['first_name','last_name', 'age', 'phone','city','code','organisation','manager']
     list_filter = ['city','organisation','manager']
-    search_fields = ['city']
-    
+    search_fields = ['city','first_name']
+
 
 @admin.register(Manager)
 class ManagerAdmin(admin.ModelAdmin):

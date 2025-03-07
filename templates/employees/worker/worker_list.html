@@ -29,24 +29,70 @@
                         <th scope="col">Number phone</th>
                         <th scope="col">City</th>
                         <th scope="col">Code</th>
+                        <th scope="col">Manager</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for worker in workers %}
                     <tr>
                         <th scope="row"><i class="bi bi-person-fill-up"></i></th>
-                        <th scope="row">{{ worker.user.first_name }}</th>
-                        <td>{{ worker.user.last_name }}</td>
+                        <th scope="row">{{ worker.first_name }}</th>
+                        <td>{{ worker.last_name }}</td>
                         <td>{{ worker.age }}</td>
                         <td>{{ worker.email }}</td>
                         <td>{{ worker.phone }}</td>
                         <td>{{ worker.city }}</td>
                         <td>{{ worker.code }}</td>
+                        <th scope="row">
+                            {% if  worker.manager  %}{{ worker.manager }} {% else %} ------- {% endif %}</th>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+            {% if unassigned_workes %}
+ 
+            <div class="w-75 mt-5">
+                <div class="mx-2 d-flex align-items-center w-75">
+                    <h4>
+                        Unassigned worker
+                    </h4>
+                </div>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>   
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Age</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">Number phone</th>
+                            <th scope="col">City</th>
+                            <th scope="col">Code</th>
+                            <th scope="col">Manager</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for worker in unassigned_workes %}
+                        <tr>
+                            <th scope="row"><i class="bi bi-person-fill-up"></i></th>
+                            <th scope="row">{{ worker.first_name }}</th>
+                            <td>{{ worker.last_name }}</td>
+                            <td>{{ worker.age }}</td>
+                            <td>{{ worker.email }}</td>
+                            <td>{{ worker.phone }}</td>
+                            <td>{{ worker.city }}</td>
+                            <td>{{ worker.code }}</td>
+                            <th scope="row">
+                               <a href="{% url 'emp:worker_asign_url' worker.id%}" class='text-decoration-none text-dark'>Asign</a>
+                            </th>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% endif %}
+        
     </div>
 </div>
 {% endblock content %}

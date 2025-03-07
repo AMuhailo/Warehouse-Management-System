@@ -1,0 +1,5 @@
+<form method="POST" class="d-flex gap-3">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input class='btn btn-sm' type='submit' value='Asign'>
+</form>
