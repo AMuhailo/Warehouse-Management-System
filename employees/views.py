@@ -18,6 +18,12 @@ class WorkerDataMixin:
     success_url = reverse_lazy('emp:worker_list_url')
     pk_url_kwarg = 'worker_pk'
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'request':self.request
+        })
+        return kwargs
 
 class WorkerFilterMixin:
     def get_queryset(self):
@@ -29,7 +35,8 @@ class WorkerFilterMixin:
             queryset = queryset.filter(manager__user = user)
         return queryset
     
-    
+
+
 class RegisterCreateView(CreateView):
     model = User
     form_class = RegisterForm
@@ -45,7 +52,8 @@ class RegisterCreateView(CreateView):
         new_employeer.save()
         return super().form_valid(form)
     
-
+    
+""" WORKER """
 class WorkerListView(WorkerFilterMixin,  ListView):
     model = Worker
     template_name = "employees/worker/worker_list.html"
@@ -58,25 +66,25 @@ class WorkerListView(WorkerFilterMixin,  ListView):
         return context
 
 
-    
 class WorkerCreateView(WorkerDataMixin, WorkerFilterMixin, CreateView):
     form_class = WorkerCreateForm
     template_name = 'employees/worker/worker_create.html'
     
+       
     def form_valid(self, form):
         user = self.request.user
         category = get_object_or_404(Category, title = 'worker')
-        
         worker = form.save(commit = False)
-        if user.is_manager:
-            manager = get_object_or_404(Manager, user = user)
-            worker.organisation = user.manager_user.organisation
-            worker.manager = manager
-        else:
-            worker.organisation = user.profiles
+        worker.manager = form.cleaned_data['manager']
+        worker.organisation = user.profiles
         worker.category = category
         worker.save()
         return super().form_valid(form)
+    
+class WorkerUpdateView(WorkerDataMixin, WorkerFilterMixin, UpdateView):
+    form_class = WorkerCreateForm
+    template_name = "employees/worker/worker_update.html"
+    
     
 class WorkerDetailView(WorkerDataMixin, WorkerFilterMixin, DetailView):
     template_name = "employees/worker/worker_detail.html"
@@ -86,13 +94,16 @@ class WorkerDeleteView(WorkerDataMixin, WorkerFilterMixin, DeleteView):
     template_name = "employees/worker/worker_delete.html"
 
 
+
 class WorkerAsignFormView(FormView):
     template_name = "employees/worker/worker_asign.html"
     form_class = AsignWorkerManager
     
     def get_form_kwargs(self, **kwargs):
-        kwargs = super().get_form_kwargs()  # Викликаємо без **kwargs
-        kwargs['request'] = self.request  # Додаємо request
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'request':self.request
+            })
         return kwargs
     
     def get_success_url(self):

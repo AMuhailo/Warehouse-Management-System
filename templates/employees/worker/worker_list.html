@@ -17,40 +17,45 @@
                 Add worker
             </a>
         </div>
-        <div class="w-75">
+        <div class="w-sm-25 w-md-50 w-lg-100 w-75">
             <table class="table">
                 <thead>
                     <tr>
-                        <th scope="col"></th>   
+                        <th scope="col">Edit</th>   
                         <th scope="col">First name</th>
                         <th scope="col">Last name</th>
                         <th scope="col">Age</th>
                         <th scope="col">Email</th>
                         <th scope="col">Number phone</th>
                         <th scope="col">City</th>
-                        <th scope="col">Code</th>
-                        <th scope="col">Manager</th>
+                        {% if request.user.is_chief %}
+                            <th scope="col">Code</th>
+                            <th scope="col">Manager</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
                     {% for worker in workers %}
                     <tr>
-                        <th scope="row"><i class="bi bi-person-fill-up"></i></th>
+                        <th scope="row"><a href="{{ worker.get_absolute_url }}"><i class="bi bi-person-fill-up"></i></a></th>
                         <th scope="row">{{ worker.first_name }}</th>
                         <td>{{ worker.last_name }}</td>
                         <td>{{ worker.age }}</td>
                         <td>{{ worker.email }}</td>
                         <td>{{ worker.phone }}</td>
                         <td>{{ worker.city }}</td>
+                        {% if request.user.is_chief %}
                         <td>{{ worker.code }}</td>
                         <th scope="row">
-                            {% if  worker.manager  %}{{ worker.manager }} {% else %} ------- {% endif %}</th>
+                            {{ worker.manager }}
+                        </th>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
-            {% if unassigned_workes %}
+            {% if unassigned_workes and request.user.is_chief %}
  
             <div class="w-75 mt-5">
                 <div class="mx-2 d-flex align-items-center w-75">

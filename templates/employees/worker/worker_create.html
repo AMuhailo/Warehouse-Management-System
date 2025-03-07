@@ -1,5 +1,13 @@
-<form action = "{% url 'emp:worder_create_url'%}" method = 'POST'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value="Add Worker"/>
-</form>
+{% if worker %}
+    <form method = 'POST'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value="Update Worker"/>
+    </form>
+{% else %}
+    <form method = 'POST'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value="Add Worker"/>
+    </form>
+{% endif %}

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-
+from django.urls import reverse
 # Create your models here.
 class User(AbstractUser):
     is_chief = models.BooleanField(default = True)
@@ -21,6 +21,10 @@ class Category(models.Model):
     title = models.CharField(max_length=10, choices = CATEGORY_CHOICES, default='worker')
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'category_organisation')
     
+    def get_absolute_url(self):
+        return reverse("model_detail", kwargs={"pk": self.pk})
+    
+    
     def __str__(self):
         return self.title
     
@@ -39,6 +43,10 @@ class Worker(models.Model):
     class Meta:
         ordering = ['-id', '-age']
     
+    def get_absolute_url(self):
+        return reverse("emp:worder_detail_url", args=[self.pk])
+    
+    
     def __str__(self):
         return f"{self.last_name} {self.first_name}"
 
@@ -49,5 +57,8 @@ class Manager(models.Model):
     code = models.CharField(max_length = 10)
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'manager_organisation')
 
+    def get_absolute_url(self):
+        return reverse("model_detail", kwargs={"pk": self.pk})
+    
     def __str__(self):
         return f"{self.user.first_name}"

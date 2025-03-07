@@ -1,7 +1,11 @@
-<nav class="navbar navbar-expand-fluid bg-dark border-bottom border-body" data-bs-theme="dark">
-    <div class="container-lg ">
+<nav class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+    <div class="container-lg">
         <a class="navbar-brand" href="#"><i class="bi bi-dropbox"></i> Warehome</a>
+        <div class='d-flex ms-auto align-items-center'>
         {% if request.user.is_authenticated %}
+            <span class="navbar-text text-white me-5">
+                User: {{ request.user.get_full_name}}
+            </span>
             <form action="{% url 'logout'%}" method="post">
                 {% csrf_token %}
                 <button type="submit" class="btn btn-sm btn-outline-primary">Logout</button>
@@ -12,5 +16,6 @@
                 <button type="submit" class="btn btn-sm btn-primary">Login</button>
             </form>
         {% endif %}
+        </div>
     </div>
-</nav>
+</nav> 

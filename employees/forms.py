@@ -24,6 +24,16 @@ class WorkerCreateForm(forms.ModelForm):
         model = Worker
         exclude = ['organisation','category']
     
+    def __init__(self, *args, **kwargs):
+        request = kwargs.pop('request')
+        super(WorkerCreateForm, self).__init__(*args, **kwargs)
+        if request.user.is_manager:
+            manager = Manager.objects.filter(user = request.user)
+            self.fields['manager'].queryset = manager
+        else:
+            manager = Manager.objects.filter(organisation = request.user.profiles)
+            self.fields['manager'].queryset = manager
+
 
 class AsignWorkerManager(forms.Form):
     manager = forms.ModelChoiceField(queryset = Manager.objects.none())
