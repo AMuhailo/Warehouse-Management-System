@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %} Worker {{ worker.last_name }} {{ worker.first_name }}{% endblock title  %}
+{% block title %} Manager {{ manager.user.get_full_name }}{% endblock title  %}
 
 {% block content %}
+    {% with manager_u=manager.user %}
     <div class="card text-center w-25 mx-auto">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <a class="nav-link text-dark active">Worker</a>
+                    <a class="nav-link active">Manager</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">Category</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark"  href="{% url 'emp:worker_update_url' worker.id %}">Edit</a>
+                    <a class="nav-link text-dark"  href="{% url 'emp:manager_update_url' manager.id %}">Update</a>
                 </li>
                 <li class="nav-item  ms-auto">
                     <a class="nav-link text-dark" href="#">Task</a>
@@ -26,43 +24,30 @@
                     <li class="list-group-item">
                         <h5 class="card-title">
                             <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
-                            {{ worker.last_name }} {{ worker.first_name }}
+                            {{ manager_u.get_full_name }} 
                         </h5>
                     </li>
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Number: </strong>
-                            <span class="ms-auto">{{ worker.phone }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
                             <strong>Email: </strong>
-                            <span class="ms-auto">{{ worker.email }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Age: </strong>
-                            <span class="ms-auto">{{ worker.age }}</span>
+                            <span class="ms-auto">{{ manager_u.email }}</span>
                         </p>
                     </li>
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
                             <strong>City: </strong>
-                            <span class="ms-auto">{{ worker.city }}</span>
+                            <span class="ms-auto">{{ manager.city }}</span>
                         </p>
                     </li>
-                    {% if request.user.is_chief %}
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Manager: </strong>
-                            <span class="ms-auto">{{ worker.manager }}</span>
+                            <strong>Worker: </strong>
+                            <span class="ms-auto">{{ manager.worker }}</span>
                         </p>
                     </li>
-                    {% endif %}
                 </ul>
             </p>
         </div>
     </div>
+    {% endwith %}
 {% endblock content %}

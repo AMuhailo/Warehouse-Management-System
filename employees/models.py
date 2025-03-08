@@ -53,8 +53,8 @@ class Worker(models.Model):
 
 class Manager(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = 'manager_user')
-    city = models.CharField(max_length = 100)
-    code = models.CharField(max_length = 10)
+    city = models.CharField(max_length = 100, blank=True, null = True)
+    code = models.CharField(max_length = 10, blank=True, null = True)
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'manager_organisation')
 
     def get_absolute_url(self):

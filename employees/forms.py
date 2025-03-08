@@ -43,3 +43,17 @@ class AsignWorkerManager(forms.Form):
         manager = Manager.objects.filter(organisation = request.user.profiles)
         super(AsignWorkerManager, self).__init__(*args, **kwargs)
         self.fields['manager'].queryset = manager
+        
+        
+        
+class ManagerCreateForm(forms.ModelForm):
+    city = forms.CharField(max_length = 100)
+    code = forms.CharField(max_length = 10)
+    class Meta:
+        model = User
+        fields = ['username','first_name','last_name','email', 'city', 'code']
+        
+class ManagerUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Manager
+        exclude = ['organisation']

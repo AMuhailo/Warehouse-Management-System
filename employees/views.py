@@ -1,17 +1,18 @@
 from random import randint
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy, reverse
+from django.db.models import Count
 from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView, FormView
-from employees.forms import RegisterForm, WorkerCreateForm, AsignWorkerManager
+from employees.forms import ManagerCreateForm, ManagerUpdateForm, RegisterForm, WorkerCreateForm, AsignWorkerManager
 from employees.models import Category, Profile, Worker, Manager
 # Create your views here
 
 User = get_user_model()
 
 
-""" MIXIN """
-    
+"""  These mixins are used to optimize class workers  """
 class WorkerDataMixin:
     model = Worker
     context_object_name = 'worker'
@@ -35,6 +36,12 @@ class WorkerFilterMixin:
             queryset = queryset.filter(manager__user = user)
         return queryset
     
+"""  These mixins are used to optimize class manager  """
+class ManagerDataMixin:
+    model = Manager
+    context_object_name = 'manager'
+    pk_url_kwarg = 'manager_pk'
+
 
 
 class RegisterCreateView(CreateView):
@@ -85,11 +92,13 @@ class WorkerUpdateView(WorkerDataMixin, WorkerFilterMixin, UpdateView):
     form_class = WorkerCreateForm
     template_name = "employees/worker/worker_update.html"
     
-    
+    def get_success_url(self):
+        return reverse('emp:worder_detail_url', args = [self.kwargs.get('worker_pk')])
+
 class WorkerDetailView(WorkerDataMixin, WorkerFilterMixin, DetailView):
     template_name = "employees/worker/worker_detail.html"
     
-    
+   
 class WorkerDeleteView(WorkerDataMixin, WorkerFilterMixin, DeleteView):
     template_name = "employees/worker/worker_delete.html"
 
@@ -116,3 +125,44 @@ class WorkerAsignFormView(FormView):
         worker.save()
         return super(WorkerAsignFormView, self).form_valid(form)
     
+    
+""" MANAGER """
+class ManagerListView(LoginRequiredMixin, ListView):
+    model = Manager
+    context_object_name = 'managers'
+    template_name = "employees/manager/manager_list.html"
+    
+    def get_queryset(self):
+        return Manager.objects.filter(organisation = self.request.user.profiles).annotate(workers = Count('worker_manager'))
+
+
+class ManagerCreateView(LoginRequiredMixin, CreateView):
+    model = Manager
+    template_name = "employees/manager/manager_create.html"
+    success_url = reverse_lazy('emp:manager_list_url')
+    form_class = ManagerCreateForm
+    
+    def form_valid(self, form, **kwargs):
+        cd = form.cleaned_data
+        manager = form.save(commit = False)
+        manager.set_password(str(randint(1000,10000)))
+        manager.is_manager = True
+        manager.is_chief = False
+        manager.save()
+        Manager.objects.create(user = manager, organisation = self.request.user.profiles, city = cd['city'], code = cd['code'])
+        return super().form_valid(form)
+    
+    
+class ManagerUpdateView(LoginRequiredMixin, ManagerDataMixin, UpdateView):
+    template_name = "employees/manager/manager_update.html"
+    form_class = ManagerUpdateForm
+    
+    def get_success_url(self):
+        return reverse_lazy('emp:manager_detail_url', args = [self.kwargs.get('manager_pk')])
+
+class ManagerDetailView(LoginRequiredMixin, ManagerDataMixin, DetailView):
+    template_name = "employees/manager/manager_detail.html"
+    
+    def get_object(self, queryset = ...):
+        manager = Manager.objects.annotate(worker = Count('worker_manager'))
+        return get_object_or_404(manager, id = self.kwargs.get('manager_pk'), organisation = self.request.user.profiles)

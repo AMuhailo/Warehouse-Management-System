@@ -13,5 +13,10 @@ urlpatterns = [
 ]
 
 managerpatterns = [
-    
+    path('manager/', views.ManagerListView.as_view(), name = 'manager_list_url'),
+    path('manager/create/', views.ManagerCreateView.as_view(), name = 'manager_create_url'),
+    path('manager/update/<manager_pk>/', views.ManagerUpdateView.as_view(), name = 'manager_update_url'),
+    path('manager/<manager_pk>/', views.ManagerDetailView.as_view(), name = 'manager_detail_url'),
 ]
+
+urlpatterns += managerpatterns

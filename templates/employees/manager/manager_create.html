@@ -1,0 +1,9 @@
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    {% if manager %}
+        <input type='submit' class='btn btn-sm btn-primary' value='Update manager'>
+    {% else %}
+        <input type='submit' class='btn btn-sm btn-success' value='Add manager'>
+    {% endif %}
+</form>

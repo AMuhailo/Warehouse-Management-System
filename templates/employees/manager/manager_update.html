@@ -1,19 +1,17 @@
 {% extends "base.html" %}
 
-{% block title %} Worker {{ worker.last_name }} {{ worker.first_name }}{% endblock title  %}
+{% block title %} Manager {{ manager.user.get_full_name }}{% endblock title  %}
 
 {% block content %}
+    {% with manager_u=manager.user %}
     <div class="card text-center w-25 mx-auto">
         <div class="card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'emp:worder_detail_url' worker.id %}">Worker</a>
+                    <a class="nav-link text-dark" href="{% url 'emp:manager_detail_url' manager.id %}">Manager</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">Category</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark active">Edit</a>
+                    <a class="nav-link text-dark active">Update</a>
                 </li>
                 <li class="nav-item  ms-auto">
                     <a class="nav-link text-dark" href="#">Task</a>
@@ -25,13 +23,16 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <h5 class="card-title">
-                            <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
-                            Edit Worker
+                            <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none">
+                                <i class="bi bi-arrow-bar-left"></i>
+                            </a>
+                            Update Manager
                         </h5>
                     </li>
                 </ul>
-                {% include "employees/worker/worker_create.html" %}
+                {% include "employees/manager/manager_create.html" %}
             </p>
         </div>
     </div>
+    {% endwith %}
 {% endblock content %}

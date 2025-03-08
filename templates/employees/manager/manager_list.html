@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %} Manager {% endblock title %}
+{% block content %}
+    <div class="row">
+        {% include "include/asidebar.html" %}
+        <div class="col-sm-10">
+            <div class="mx-2 d-flex align-items-center w-75">
+                <h4 class="d-flex flex-column">
+                    Managers panel
+                    <span>
+                        <a href='' class='display-6 fs-6 text-secondary text-decoration-none'>
+                            View worker
+                        </a>
+                    </span>
+                </h4>
+                <a href="{% url 'emp:manager_create_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
+                    Add manager
+                </a>
+            </div>
+            <div class="w-sm-25 w-md-50 w-lg-100 w-75">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Edit</th>   
+                            <th scope="col">First name</th>
+                            <th scope="col">Last name</th>
+                            <th scope="col">Email</th>
+                            <th scope="col">City</th>
+                            {% if request.user.is_chief %}
+                                <th scope="col">Code</th>
+                                <th scope="col">Worker</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for manager in managers %}
+                        <tr>
+                            <th scope="row">
+                                <a href="{% url 'emp:manager_detail_url' manager.id %}">
+                                    <i class="bi bi-person-fill-lock"></i>
+                                </a>
+                            </th>
+                            <th scope="row">{{ manager.user.first_name }}</th>
+                            <td>{{ manager.user.last_name }}</td>
+                            <td>{{ manager.user.email }}</td>
+                            <td>{{ manager.city }}</td>
+                            {% if request.user.is_chief %}
+                            <td>{{ manager.code }}</td>
+                            <th scope="row">
+                                {{ manager.workers }}
+                            </th>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
