@@ -23,7 +23,7 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <h5 class="card-title">
-                            <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+                            <a href="{% url 'emp:manager_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
                             {{ manager_u.get_full_name }} 
                         </h5>
                     </li>
@@ -42,7 +42,7 @@
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
                             <strong>Worker: </strong>
-                            <span class="ms-auto">{{ manager.worker }}</span>
+                            <span class="ms-auto">{{ manager.workers }}</span>
                         </p>
                     </li>
                 </ul>

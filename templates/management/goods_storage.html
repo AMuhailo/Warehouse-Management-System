@@ -13,9 +13,11 @@
                     </a>
                 </span>
             </h4>
-            <a href="{% url 'manage:goods_created_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
-                Add goods
-            </a>
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'manage:goods_created_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
+                    Add goods
+                </a>
+            {% endif %}
         </div>
         <div class="w-75">
             <table class="table">

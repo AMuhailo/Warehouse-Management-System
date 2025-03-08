@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy, reverse
 from django.db.models import Count
 from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView, FormView
+from employees.utils import StaffURLBarrier
 from employees.forms import ManagerCreateForm, ManagerUpdateForm, RegisterForm, WorkerCreateForm, AsignWorkerManager
 from employees.models import Category, Profile, Worker, Manager
 # Create your views here
@@ -37,8 +38,12 @@ class WorkerFilterMixin:
         return queryset
     
 """  These mixins are used to optimize class manager  """
-class ManagerDataMixin:
+class ManagerMixin(StaffURLBarrier):
     model = Manager
+    def get_queryset(self):
+        return Manager.objects.filter(organisation = self.request.user.profiles).annotate(workers = Count('worker_manager'))
+
+class ManagerDataMixin(ManagerMixin):
     context_object_name = 'manager'
     pk_url_kwarg = 'manager_pk'
 
@@ -127,16 +132,12 @@ class WorkerAsignFormView(FormView):
     
     
 """ MANAGER """
-class ManagerListView(LoginRequiredMixin, ListView):
-    model = Manager
+class ManagerListView(LoginRequiredMixin, ManagerMixin, ListView):
     context_object_name = 'managers'
-    template_name = "employees/manager/manager_list.html"
-    
-    def get_queryset(self):
-        return Manager.objects.filter(organisation = self.request.user.profiles).annotate(workers = Count('worker_manager'))
+    template_name = "employees/manager/manager_list.html"    
 
 
-class ManagerCreateView(LoginRequiredMixin, CreateView):
+class ManagerCreateView(LoginRequiredMixin, ManagerMixin, CreateView):
     model = Manager
     template_name = "employees/manager/manager_create.html"
     success_url = reverse_lazy('emp:manager_list_url')
@@ -162,7 +163,3 @@ class ManagerUpdateView(LoginRequiredMixin, ManagerDataMixin, UpdateView):
 
 class ManagerDetailView(LoginRequiredMixin, ManagerDataMixin, DetailView):
     template_name = "employees/manager/manager_detail.html"
-    
-    def get_object(self, queryset = ...):
-        manager = Manager.objects.annotate(worker = Count('worker_manager'))
-        return get_object_or_404(manager, id = self.kwargs.get('manager_pk'), organisation = self.request.user.profiles)
