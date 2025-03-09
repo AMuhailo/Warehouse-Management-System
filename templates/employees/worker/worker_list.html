@@ -25,7 +25,6 @@
                         <th scope="col">First name</th>
                         <th scope="col">Last name</th>
                         <th scope="col">Age</th>
-                        <th scope="col">Email</th>
                         <th scope="col">Number phone</th>
                         <th scope="col">City</th>
                         {% if request.user.is_chief %}
@@ -41,11 +40,10 @@
                         <th scope="row">{{ worker.first_name }}</th>
                         <td>{{ worker.last_name }}</td>
                         <td>{{ worker.age }}</td>
-                        <td>{{ worker.email }}</td>
                         <td>{{ worker.phone }}</td>
-                        <td>{{ worker.city }}</td>
+                        <td>{{ worker.storage.city }}</td>
                         {% if request.user.is_chief %}
-                        <td>{{ worker.code }}</td>
+                        <td>{{ worker.storage.code }}</td>
                         <th scope="row">
                             {{ worker.manager }}
                         </th>
@@ -70,7 +68,6 @@
                             <th scope="col">First name</th>
                             <th scope="col">Last name</th>
                             <th scope="col">Age</th>
-                            <th scope="col">Email</th>
                             <th scope="col">Number phone</th>
                             <th scope="col">City</th>
                             <th scope="col">Code</th>
@@ -84,10 +81,9 @@
                             <th scope="row">{{ worker.first_name }}</th>
                             <td>{{ worker.last_name }}</td>
                             <td>{{ worker.age }}</td>
-                            <td>{{ worker.email }}</td>
                             <td>{{ worker.phone }}</td>
-                            <td>{{ worker.city }}</td>
-                            <td>{{ worker.code }}</td>
+                            <td>{{ worker.storage.city }}</td>
+                            <td>{{ worker.storage.code }}</td>
                             <th scope="row">
                                <a href="{% url 'emp:worker_asign_url' worker.id%}" class='text-decoration-none text-dark'>Asign</a>
                             </th>

@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from .models import Manager, Profile, Worker
+from employees.models import Manager, Profile, Worker
+from management.models import Storage
 
 User = get_user_model()
 
@@ -30,11 +31,12 @@ class WorkerCreateForm(forms.ModelForm):
         if request.user.is_manager:
             manager = Manager.objects.filter(user = request.user)
             self.fields['manager'].queryset = manager
+            self.fields['storage'].queryset = Storage.objects.filter(city = request.user.manager_user.storage.city)
         else:
             manager = Manager.objects.filter(organisation = request.user.profiles)
             self.fields['manager'].queryset = manager
-
-
+            
+            
 class AsignWorkerManager(forms.Form):
     manager = forms.ModelChoiceField(queryset = Manager.objects.none())
 
@@ -47,11 +49,11 @@ class AsignWorkerManager(forms.Form):
         
         
 class ManagerCreateForm(forms.ModelForm):
-    city = forms.CharField(max_length = 100)
-    code = forms.CharField(max_length = 10)
+    storage = forms.ModelChoiceField(queryset = Storage.objects.all())
     class Meta:
         model = User
-        fields = ['username','first_name','last_name','email', 'city', 'code']
+        fields = ['username','first_name','last_name','email','storage']
+        
         
 class ManagerUpdateForm(forms.ModelForm):
     class Meta:

@@ -85,13 +85,15 @@ class WorkerCreateView(WorkerDataMixin, WorkerFilterMixin, CreateView):
        
     def form_valid(self, form):
         user = self.request.user
+        cd = form.cleaned_data
         category = get_object_or_404(Category, title = 'worker')
         worker = form.save(commit = False)
-        worker.manager = form.cleaned_data['manager']
-        worker.organisation = user.profiles
+        worker.manager = cd['manager']
+        worker.organisation = user.manager_user.organisation
         worker.category = category
         worker.save()
         return super().form_valid(form)
+    
     
 class WorkerUpdateView(WorkerDataMixin, WorkerFilterMixin, UpdateView):
     form_class = WorkerCreateForm
@@ -150,7 +152,7 @@ class ManagerCreateView(LoginRequiredMixin, ManagerMixin, CreateView):
         manager.is_manager = True
         manager.is_chief = False
         manager.save()
-        Manager.objects.create(user = manager, organisation = self.request.user.profiles, city = cd['city'], code = cd['code'])
+        Manager.objects.create(user = manager, organisation = self.request.user.profiles, storage = cd['storage'])
         return super().form_valid(form)
     
     

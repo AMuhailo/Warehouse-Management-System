@@ -2,7 +2,8 @@ from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
-from management.models import Category, Goods
+from employees.models import Manager
+from management.models import Storage, Category, Goods
 from management.tasks import replenish_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm
 from django.db.models import Q
@@ -11,7 +12,8 @@ from django.db.models import Q
 class GoodsListMixin:
     model = Goods
     context_object_name = 'goods'
-
+    
+    
 class GoodsDataMixin:
     model = Goods
     success_url = reverse_lazy('manage:goods_storage_url')
@@ -40,19 +42,46 @@ class GoodsCreateView(GoodsStockMixin, CreateView):
     template_name = "management/goods_create.html"
     form_class = GoodsCreateForm
     
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({
+            'user':self.request.user
+        })
+        return kwargs
+    
     def form_valid(self, form):
         return super().form_valid(form)
     
     
 class GoodsStorageListView(GoodsListMixin, ListView):  
     template_name = "management/goods_storage.html"
-    queryset = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = True) & ~Q(quantity = 0))
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_manager:
+            goods = Goods.objects.only('id','slug','title','quantity','price').filter(
+                                                                    (Q(in_stock = True) & ~Q(quantity = 0) 
+                                                                    & 
+                                                                    Q(city = user.manager_user.storage)
+                                                                     ))
+        else:
+            goods = Goods.objects.only('id','slug','title','quantity','price')
+        return goods
     
     
-class GoodsNotStockListView(GoodsListMixin, ListView):   
+class GoodsNotStockListView(ListView):   
     template_name = "management/goods_not_storage.html"
     queryset =  Goods.objects.only('id','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
-
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_manager:
+            goods = Goods.objects.only('id','slug','title','quantity','price').filter(
+                                                                    (Q(in_stock = False) | Q(quantity = 0) 
+                                                                    & 
+                                                                    Q(city = user.manager_user.storage)
+                                                                     ))
+        else:
+            goods = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
+        return goods
 
 class GoodsUpdateView(GoodsStockMixin, UpdateView):
     form_class = GoodsUpdateForm

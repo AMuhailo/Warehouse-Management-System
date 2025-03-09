@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.urls import reverse
+
+from management.models import Storage
 # Create your models here.
 class User(AbstractUser):
     is_chief = models.BooleanField(default = True)
@@ -34,8 +36,7 @@ class Worker(models.Model):
     last_name = models.CharField(max_length = 20)
     age = models.PositiveIntegerField(default = 0)
     phone = models.CharField(max_length = 20)
-    city = models.CharField(max_length = 100)
-    code = models.CharField(max_length=10)
+    storage = models.ForeignKey(Storage, on_delete = models.CASCADE, related_name = 'worker_city')
     category = models.ForeignKey(Category, on_delete = models.SET_NULL, null = True, blank = True, related_name = 'categoty_worker')
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'worker_organisation')
     manager = models.ForeignKey('Manager', on_delete = models.SET_NULL, null = True, blank = True, related_name = 'worker_manager')
@@ -53,12 +54,11 @@ class Worker(models.Model):
 
 class Manager(models.Model):
     user = models.OneToOneField(User, on_delete = models.CASCADE, related_name = 'manager_user')
-    city = models.CharField(max_length = 100, blank=True, null = True)
-    code = models.CharField(max_length = 10, blank=True, null = True)
+    storage = models.OneToOneField(Storage, on_delete = models.CASCADE,related_name = 'manager_city')
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'manager_organisation')
 
     def get_absolute_url(self):
-        return reverse("model_detail", kwargs={"pk": self.pk})
+        return reverse("emp:manager_detail_url",args=[self.pk])
     
     def __str__(self):
         return f"{self.user.first_name}"

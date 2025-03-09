@@ -15,9 +15,6 @@
                 <li class="nav-item">
                     <a class="nav-link text-dark"  href="{% url 'emp:worker_update_url' worker.id %}">Edit</a>
                 </li>
-                <li class="nav-item  ms-auto">
-                    <a class="nav-link text-dark" href="#">Task</a>
-                </li>
             </ul>
         </div>
         <div class="card-body text-start">
@@ -37,20 +34,20 @@
                     </li>
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Email: </strong>
-                            <span class="ms-auto">{{ worker.email }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
                             <strong>Age: </strong>
                             <span class="ms-auto">{{ worker.age }}</span>
                         </p>
                     </li>
                     <li class="list-group-item">
                         <p class="d-flex flex-row align-items-center m-0">
+                            <strong>State: </strong>
+                            <span class="ms-auto">{{ worker.storage.state }}</span>
+                        </p>
+                    </li>
+                    <li class="list-group-item">
+                        <p class="d-flex flex-row align-items-center m-0">
                             <strong>City: </strong>
-                            <span class="ms-auto">{{ worker.city }}</span>
+                            <span class="ms-auto">{{ worker.storage.city }}</span>
                         </p>
                     </li>
                     {% if request.user.is_chief %}

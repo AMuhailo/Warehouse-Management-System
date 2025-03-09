@@ -19,6 +19,19 @@ class Category(models.Model):
         return self.name
     
     
+class Storage(models.Model):
+    city = models.CharField(max_length = 100)
+    street =  models.CharField(max_length = 100, blank = True, null = True)
+    code = models.PositiveIntegerField(default = 0000, blank = True, null = True)
+    state = models.CharField(max_length = 100 )
+    
+    class Meta:
+        ordering = ['-code']
+        indexes = [models.Index(fields = ['-code'])]
+        
+    def __str__(self):
+        return f"{self.city} | { self.code} | {self.street}"
+
 class Goods(models.Model):
     category = models.ForeignKey(Category, on_delete = models.SET_NULL, blank = True, null = True)
     image = models.ImageField(upload_to = 'goods/', blank = True, null = True)
@@ -28,6 +41,7 @@ class Goods(models.Model):
     price = models.DecimalField(max_digits = 10, decimal_places = 2, help_text='Unit price')
     in_stock = models.BooleanField(default = True)
     qr_code = models.ImageField(upload_to='qrcode/',blank = True, null = True)
+    city = models.ForeignKey(Storage, on_delete = models.CASCADE, related_name = 'goods_city')
     provider = models.ForeignKey('Provider', on_delete = models.SET_NULL, blank = True, null = True, related_name = 'goods_provider')
 
     imported = models.DateTimeField(default = timezone.now)  

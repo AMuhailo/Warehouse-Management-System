@@ -27,8 +27,11 @@
                         <th scope="col">Gategory</th>
                         <th scope="col">Goods</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Provider</th>
                         <th scope="col">Imported</th>
+                        <th scope="col">Provider</th>
+                        {% if request.user.is_authenticated and request.user.is_chief %}
+                        <th scope="col">Location</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 <tbody>
@@ -38,8 +41,11 @@
                         <th scope="row">{{ good.category}}</th>
                         <td>{{ good.title }}</td>
                         <td>{{ good.quantity }}</td>
-                        <td>{{ good.provider}}</td>
                         <td>{{ good.imported.date }}</td>
+                        <td>{{ good.provider}}</td>
+                        {% if request.user.is_authenticated and request.user.is_chief %}
+                            <td>{{ good.city.code}}</td>
+                        {% endif %}
                     </tr>
                     {% endfor %}
                 </tbody>
