@@ -1,5 +1,5 @@
 from django import forms
-from employees.models import Manager
+from employees.models import Category, Manager
 from management.models import Goods, Storage
 
 class GoodsCreateForm(forms.ModelForm):
@@ -19,3 +19,10 @@ class GoodsUpdateForm(forms.ModelForm):
     class Meta:
         model = Goods
         fields = ['quantity']
+        
+        
+class CategoryForm(forms.Form):
+    class Meta:
+        model = Category
+        exclude = ['slug']
+        

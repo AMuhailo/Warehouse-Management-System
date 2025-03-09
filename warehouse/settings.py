@@ -134,7 +134,11 @@ AUTH_USER_MODEL = 'employees.User'
 # Create email
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-
+#AUTHENTICATED
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'manage:goods_storage_url'
+LOGOUT_URL = 'logout'
+LOGOUT_REDIRECT_URL = 'login'
 #Celery worker
 CELERY_TIMEZONE = "Australia/Tasmania"
 CELERY_TASK_TRACK_STARTED = True
