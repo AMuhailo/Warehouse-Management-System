@@ -1,5 +1,59 @@
-<form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='update'>
-</form>
+{% extends "base.html" %}
+{% block title %} Out of Stock {% endblock title %}
+{% block content %}
+<div class="row">
+    {% include "include/asidebar.html" %}
+    <div class="col-sm-10">
+        <div class="mx-2 d-flex align-items-center w-75">
+            <h4 class="d-flex flex-column">
+                Out of Stock
+                <span>
+                    <a href='' class='display-6 fs-6 text-secondary text-decoration-none'>
+                        View goods categories
+                    </a>
+                </span>
+            </h4>
+            <a href="{% url 'manage:goods_created_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
+                Add goods
+            </a>
+        </div>
+        <div class="w-75">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>   
+                        <th scope="col">Gategory</th>
+                        <th scope="col">Goods</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Imported</th>
+                        <th scope="col">Provider</th>
+                        {% if request.user.is_authenticated and request.user.is_chief %}
+                        <th scope="col">Location</th>
+                        {% endif %}
+                    </tr>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row"><i class="bi bi-inboxes-fill"></i></th>
+                        <th scope="row">{{ good.category}}</th>
+                        <td>{{ good.title }}</td>
+                        <td>
+                            <form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
+                                {% csrf_token %}
+                                {{ form.as_p }}
+                                <input type='submit' value='update'>
+                            </form>
+                        </td>
+                        <td>{{ good.imported.date }}</td>
+                        <td>{{ good.provider}}</td>
+                        {% if request.user.is_authenticated and request.user.is_chief %}
+                            <td>{{ good.city.code}}</td>
+                        {% endif %}
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

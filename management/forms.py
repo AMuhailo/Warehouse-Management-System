@@ -2,6 +2,8 @@ from django import forms
 from employees.models import Manager
 from management.models import Goods, Provider, Storage, Category
 from django.utils.text import slugify
+
+QUANTITY_GOODS = [(q, str(q)) for q in range(25,101,25)]
 class GoodsCreateForm(forms.ModelForm):
     class Meta:
         model = Goods
@@ -15,10 +17,8 @@ class GoodsCreateForm(forms.ModelForm):
         else:
             self.fields['city'].queryset = Storage.objects.all()
             
-class GoodsUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Goods
-        fields = ['quantity']
+class GoodsUpdateForm(forms.Form):
+    quantity = forms.TypedChoiceField(choices = QUANTITY_GOODS, coerce = int)
         
         
 class CategoryForm(forms.ModelForm):
