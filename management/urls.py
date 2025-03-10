@@ -19,5 +19,12 @@ categorypatterns = [
     path('category/update/<category_slug>/<category_pk>/', views.CategoryUpdateView.as_view() , name = 'category_update_url'),
 ]
 
+providerpatterns = [
+    path('provider/', views.ProviderListView.as_view(), name = 'provider_list_url'),
+    path('provider/create/', views.ProviderCreateView.as_view(), name = 'provider_create_url'),
+    path('provider/<provider_name>/<provider_pk>/', views.ProviderDetailView.as_view(), name = 'provider_detail_url'),
+    path('provider/update/<provider_name>/<provider_pk>/', views.ProviderUpdateView.as_view(), name = 'provider_update_url')
+]
 
 urlpatterns += categorypatterns
+urlpatterns += providerpatterns

@@ -4,61 +4,64 @@
 
 {% block content %}
     {% with manager_u=manager.user %}
-    <div class="card text-center w-25 mx-auto">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item">
-                    <a class="nav-link active">Manager</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark"  href="{% url 'emp:manager_update_url' manager.id %}">Update</a>
-                </li>
-                <li class="nav-item  ms-auto">
-                    <a class="nav-link text-dark" href="#">Task</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body text-start">
-            <p class="card-text d-flex flex-column">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <h5 class="card-title">
-                            <a href="{% url 'emp:manager_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
-                            {{ manager_u.get_full_name }} 
-                        </h5>
+    <div class="container-lg container-md mx-auto">
+        <div class="row card text-center">
+            <div class="col-lg-12 col-sm-6 col-md-12  card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active">Manager</a>
                     </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Email: </strong>
-                            <span class="ms-auto">{{ manager_u.email }}</span>
-                        </p>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark"  href="{% url 'emp:manager_update_url' manager.id %}">Update</a>
                     </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>State: </strong>
-                            <span class="ms-auto">{{ manager.storage.state }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>City: </strong>
-                            <span class="ms-auto">{{ manager.storage.city }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Code: </strong>
-                            <span class="ms-auto">{{ manager.storage.code }}</span>
-                        </p>
-                    </li>
-                    <li class="list-group-item">
-                        <p class="d-flex flex-row align-items-center m-0">
-                            <strong>Worker: </strong>
-                            <span class="ms-auto">{{ manager.workers }}</span>
-                        </p>
+                    <li class="nav-item  ms-auto">
+                        <a class="nav-link text-dark" href="#">Task</a>
                     </li>
                 </ul>
-            </p>
+            </div>
+            <div class="col-lg-12 col-sm-6 col-md-12  card-body text-start">
+                <p class="card-text d-flex flex-column">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <h5 class="card-title d-flex flex-row align-items-center m-0">
+                                <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+                                <strong>Full Name:</strong>
+                                <span class='ms-auto'>{{ manager_u.get_full_name }} </span>
+                            </h5>
+                        </li>
+                        <li class="list-group-item">
+                            <p class="d-flex flex-row align-items-center m-0">
+                                <strong>Email: </strong>
+                                <span class="ms-auto">{{ manager_u.email }}</span>
+                            </p>
+                        </li>
+                        <li class="list-group-item">
+                            <p class="d-flex flex-row align-items-center m-0">
+                                <strong>State: </strong>
+                                <span class="ms-auto">{{ manager.storage.state }}</span>
+                            </p>
+                        </li>
+                        <li class="list-group-item">
+                            <p class="d-flex flex-row align-items-center m-0">
+                                <strong>City: </strong>
+                                <span class="ms-auto">{{ manager.storage.city }}</span>
+                            </p>
+                        </li>
+                        <li class="list-group-item">
+                            <p class="d-flex flex-row align-items-center m-0">
+                                <strong>Code: </strong>
+                                <span class="ms-auto">{{ manager.storage.code }}</span>
+                            </p>
+                        </li>
+                        <li class="list-group-item">
+                            <p class="d-flex flex-row align-items-center m-0">
+                                <strong>Worker: </strong>
+                                <span class="ms-auto">{{ manager.workers }}</span>
+                            </p>
+                        </li>
+                    </ul>
+                </p>
+            </div>
         </div>
     </div>
     {% endwith %}

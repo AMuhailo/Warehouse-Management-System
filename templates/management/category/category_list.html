@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %} Category {% endblock title %}
+{% block content %}
+<div class="row">
+    {% include "include/asidebar.html" %}
+    <div class="col-sm-10">
+        <div class="mx-2 d-flex align-items-center w-75">
+            <h4 class="d-flex flex-column">
+                Category goods
+                <span>
+                    <a href="{% url 'manage:goods_storage_url'%}" class='display-6 fs-6 text-secondary text-decoration-none'>
+                        Back to storage
+                    </a>
+                </span>
+            </h4>
+            {% include "management/category/category_create.html" %}
+        </div>
+        <ol class="list-group list-group-numbere w-sm-25 w-md-50 w-lg-100 w-75">
+            {% for category in categories %}
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold fs-4">{{category.name}}</div>
+                        <a href="{% url 'manage:category_detail_url' category.slug category.id %}" class='text-decoration-none text-secondary'>View goods this category</a>
+                    </div>
+                    <span class="badge text-bg-secondary rounded-pill p-3 fs-5">{{category.category}}</span>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>
+{% endblock content %}

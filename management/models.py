@@ -14,7 +14,10 @@ class Category(models.Model):
     
     class Meta:
         ordering = ['id']
-    
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super().save(*args, **kwargs)
     def __str__(self):
         return self.name
     
@@ -100,11 +103,16 @@ class Goods(models.Model):
         return self.title
     
 class Provider(models.Model):
+    goods = models.ForeignKey(Goods, on_delete = models.SET_NULL, null = True, blank = True, related_name = 'provider_goods')
     name = models.CharField(max_length=100)
     location = models.CharField(max_length=255, blank = True, null = True)
     agent = models.CharField(max_length=50, blank = True, null = True)
     email = models.EmailField()
-    number = models.CharField(max_length=20)
+    number = models.CharField(max_length=20, blank=True, null = True)
+    
+    
+    def get_absolute_url(self):
+        return reverse("manage:provider_detail_url", args=[self.name, self.id])
     
     def __str__(self):
         return self.name

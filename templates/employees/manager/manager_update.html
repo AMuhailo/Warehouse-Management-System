@@ -4,34 +4,36 @@
 
 {% block content %}
     {% with manager_u=manager.user %}
-    <div class="card text-center w-25 mx-auto">
-        <div class="card-header">
-            <ul class="nav nav-tabs card-header-tabs">
-                <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'emp:manager_detail_url' manager.id %}">Manager</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark active">Update</a>
-                </li>
-                <li class="nav-item  ms-auto">
-                    <a class="nav-link text-dark" href="#">Task</a>
-                </li>
-            </ul>
-        </div>
-        <div class="card-body text-start">
-            <p class="card-text d-flex flex-column">
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        <h5 class="card-title">
-                            <a href="{% url 'emp:manager_list_url'%}" class="text-decoration-none">
-                                <i class="bi bi-arrow-bar-left"></i>
-                            </a>
-                            Update Manager
-                        </h5>
+    <div class="container-lg container-md mx-auto">
+        <div class="row card text-center">
+            <div class="col-lg-12 col-sm-6 col-md-12 card-header">
+                <ul class="nav nav-tabs card-header-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'emp:manager_detail_url' manager.id %}">Manager</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark active">Update</a>
+                    </li>
+                    <li class="nav-item  ms-auto">
+                        <a class="nav-link text-dark" href="#">Task</a>
                     </li>
                 </ul>
-                {% include "employees/manager/manager_create.html" %}
-            </p>
+            </div>
+            <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
+                <p class="card-text d-flex flex-column">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <h5 class="card-title">
+                                <a href="{% url 'emp:manager_list_url'%}" class="text-decoration-none">
+                                    <i class="bi bi-arrow-bar-left"></i>
+                                </a>
+                                Update Manager
+                            </h5>
+                        </li>
+                    </ul>
+                    {% include "employees/manager/manager_create.html" %}
+                </p>
+            </div>
         </div>
     </div>
     {% endwith %}

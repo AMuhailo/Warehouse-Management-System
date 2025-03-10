@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %} Worker {{ worker.last_name }} {{ worker.first_name }}{% endblock title  %}
+{% block title %} Provider {{ provider.name }}{% endblock title  %}
 
 {% block content %}
 <div class="container-lg container-md mx-auto">
@@ -8,10 +8,10 @@
         <div class="col-lg-12 col-sm-6 col-md-12 card-header">
             <ul class="nav nav-tabs card-header-tabs">
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'emp:worder_detail_url' worker.id %}">Worker</a>
+                    <a class="nav-link text-dark" href="{% url 'manage:provider_detail_url' provider.name provider.id %}">Worker</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">Category</a>
+                    <a class="nav-link text-dark" href="#">Goods</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-dark active">Edit</a>
@@ -23,12 +23,12 @@
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
                         <h5 class="card-title">
-                            <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
-                            Edit Worker
+                            <a href="{% url 'manage:provider_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+                            Edit Provider
                         </h5>
                     </li>
                 </ul>
-                {% include "employees/worker/worker_create.html" %}
+                {% include "management/provider/provider_create.html" %}
             </p>
         </div>
     </div>

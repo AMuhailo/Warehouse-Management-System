@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} Provider {% endblock title %}
+{% block content %}
+<div class="row">
+    {% include "include/asidebar.html" %}
+    <div class="col-sm-10">
+        <div class="mx-2 d-flex align-items-center w-75">
+            <h4 class="d-flex flex-column">
+                Provider
+                <span>
+                    <a href="{% url 'manage:goods_storage_url'%}" class='display-6 fs-6 text-secondary text-decoration-none'>
+                        Back to storage
+                    </a>
+                </span>
+            </h4>
+            <a href="{% url 'manage:provider_create_url'%}" class='ms-auto fs-5 text-secondary text-decoration-none'>
+                Add provider
+            </a>
+        </div>
+        <div class="w-75">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col"></th>   
+                        <th scope="col">Name</th>
+                        <th scope="col">Agent</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for provider in providers %}
+                    <tr>
+                        <th scope="row">
+                            <a href="{{ provider.get_absolute_url }}">
+                                <i class="bi bi-person-badge"></i>
+                            </a>
+                        </th>
+                        <th scope="row">{{ provider.name}}</th>
+                        <td>{{ provider.agent }}</td>
+                        <td>{{ provider.email }}</td>
+                        {% if provider.number %}
+                            <td>{{ provider.number }}</td>
+                        {% else %}
+                            <td>-------------------</td>
+                        {% endif %}
+                        
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,5 @@
+<form method="POST" class="ms-auto">
+    {% csrf_token %}
+    {{ form.as_p}}
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Add</button>
+</form> 

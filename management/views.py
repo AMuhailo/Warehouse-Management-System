@@ -1,12 +1,14 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from employees.models import Manager
-from management.models import Storage, Category, Goods
+from django.db.models import Count
+from employees.utils import StaffURLBarrier
+from management.models import Storage, Category, Goods, Provider
 from management.tasks import replenish_goods
-from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm
+from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
 from django.db.models import Q
 
 # Create your views here.
@@ -38,7 +40,6 @@ class GoodsStockMixin(GoodsURLMixin):
         return super().form_valid(form)
 
 
-
 class CategoryMixin(LoginRequiredMixin):
     model = Category
 
@@ -49,12 +50,20 @@ class CategoryDataMixin(CategoryMixin):
     pk_url_kwarg = 'category_pk'
 
 
-class CategoryFormMixin(CategoryDataMixin):
+class CategoryFormMixin(CategoryDataMixin):    
     template_name = 'management/category/category_create.html'
     form_class = CategoryForm
     success_url = reverse_lazy('manage:categories_list_url')
     
     
+class ProviderMixin(StaffURLBarrier):
+    model = Provider
+
+class ProviderDataMixin(ProviderMixin):
+    slug_url_kwarg = 'provider_name'
+    pk_url_kwarg = 'provider_pk'
+    context_object_name = 'provider'
+
 
 class GoodsCreateView(GoodsStockMixin, CreateView):
     template_name = "management/goods/goods_create.html"
@@ -76,11 +85,13 @@ class GoodsStorageListView(GoodsListMixin, ListView):
     def get_queryset(self):
         user = self.request.user
         if user.is_manager:
-            goods = Goods.objects.only('id','slug','title','quantity','price').filter(
-                                                                    (Q(in_stock = True) & ~Q(quantity = 0) 
-                                                                    & 
-                                                                    Q(city = user.manager_user.storage)
-                                                                     ))
+            goods = Goods.objects\
+                                .only('id','slug','title','quantity','price')\
+                                .filter(
+                                        (Q(in_stock = True) & ~Q(quantity = 0) 
+                                        & 
+                                        Q(city = user.manager_user.storage)
+                                            ))
         else:
             goods = Goods.objects.only('id','slug','title','quantity','price')
         return goods
@@ -88,17 +99,23 @@ class GoodsStorageListView(GoodsListMixin, ListView):
     
 class GoodsNotStockListView(ListView):   
     template_name = "management/goods/goods_not_storage.html"
-    queryset =  Goods.objects.only('id','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
+    queryset =  Goods.objects\
+                            .only('id','title','quantity','price')\
+                            .filter(Q(in_stock = False) | Q(quantity = 0))
     def get_queryset(self):
         user = self.request.user
         if user.is_manager:
-            goods = Goods.objects.only('id','slug','title','quantity','price').filter(
-                                                                    (Q(in_stock = False) | Q(quantity = 0) 
-                                                                    & 
-                                                                    Q(city = user.manager_user.storage)
-                                                                     ))
+            goods = Goods.objects\
+                                .only('id','slug','title','quantity','price')\
+                                .filter(
+                                        (Q(in_stock = False) | Q(quantity = 0) 
+                                        & 
+                                        Q(city = user.manager_user.storage)
+                                            ))
         else:
-            goods = Goods.objects.only('id','slug','title','quantity','price').filter(Q(in_stock = False) | Q(quantity = 0))
+            goods = Goods.objects\
+                                .only('id','slug','title','quantity','price')\
+                                .filter(Q(in_stock = False) | Q(quantity = 0))
         return goods
 
 class GoodsUpdateView(GoodsStockMixin, UpdateView):
@@ -125,14 +142,43 @@ def scan_goods(request, goods_slug, goods_pk, action):
 class CategoryListView(CategoryMixin, ListView):
     template_name = 'management/category/category_list.html'
     context_object_name = 'categories'
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().annotate(category = Count('goods'))
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = CategoryForm 
+        return context
     
     
 class CategoryDetailView(CategoryDataMixin, DetailView):
     template_name = 'management/category/category_detail.html'
-
+    
     
 class CategoryCreateView(CategoryFormMixin, CreateView): pass
     
     
 class CategoryUpdateView(CategoryFormMixin, UpdateView): pass
+
+
+class ProviderListView(ProviderMixin, ListView):
+    context_object_name = 'providers'
+    template_name = 'management/provider/provider_list.html'
+    queryset = Provider.objects.only('id','name','agent','email','number')
+
+
+class ProviderDetailView(ProviderDataMixin, DetailView):
+    template_name = 'management/provider/provider_detail.html'
+    
+    
+    
+class ProviderCreateView(ProviderMixin, CreateView):
+    template_name = 'management/provider/provider_create.html'
+    success_url = reverse_lazy('manage:provider_list_url')
+    form_class = ProviderForm
+
+    
+class ProviderUpdateView(ProviderDataMixin, UpdateView):
+    template_name = 'management/provider/provider_update.html'
+    form_class = ProviderForm
+    
+    def get_success_url(self):
+        return reverse('manage:provider_detail_url', args=[self.kwargs.get('provider_name'), self.kwargs.get('provider_pk')])

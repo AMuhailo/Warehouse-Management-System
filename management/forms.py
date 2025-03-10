@@ -1,7 +1,7 @@
 from django import forms
-from employees.models import Category, Manager
-from management.models import Goods, Storage
-
+from employees.models import Manager
+from management.models import Goods, Provider, Storage, Category
+from django.utils.text import slugify
 class GoodsCreateForm(forms.ModelForm):
     class Meta:
         model = Goods
@@ -21,8 +21,13 @@ class GoodsUpdateForm(forms.ModelForm):
         fields = ['quantity']
         
         
-class CategoryForm(forms.Form):
+class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
-        exclude = ['slug']
+        fields = ['name']
         
+
+class ProviderForm(forms.ModelForm):
+    class Meta:
+        model = Provider
+        exclude = ['goods']
