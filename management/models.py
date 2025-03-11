@@ -8,6 +8,23 @@ from django.utils import timezone
 from django.urls import reverse
 
 # Create your models here.
+class Status(models.Model):
+    class ChoicesStatus(models.TextChoices):
+        MISSING = 'MS', 'Missing'
+        SEND = 'SD', 'Send'
+        ARRIVED  ='AD', 'Arrived'
+        
+    name = models.CharField(max_length=2, choices = ChoicesStatus.choices, default = ChoicesStatus.ARRIVED)
+    date_from = models.DateTimeField(blank = True, null = True)
+    date_to = models.DateTimeField(blank = True, null = True)
+    goods = models.ManyToManyField('Goods', related_name = 'status_goods')
+    class Meta:
+        ordering = ['-date_from', 'date_to']
+        indexes = [models.Index(fields=['-date_from']),
+                   models.Index(fields=['-date_to'])]
+    def __str__(self):
+        return self.name
+    
 class Category(models.Model):
     name = models.CharField(max_length = 50)
     slug = models.SlugField(max_length = 60, blank = True)
@@ -35,6 +52,7 @@ class Storage(models.Model):
     def __str__(self):
         return f"{self.city} | { self.code} | {self.street}"
 
+
 class Goods(models.Model):
     category = models.ForeignKey(Category, on_delete = models.SET_NULL, blank = True, null = True)
     image = models.ImageField(upload_to = 'goods/', blank = True, null = True)
@@ -58,11 +76,13 @@ class Goods(models.Model):
                     models.Index(fields = ['id'])]
         
     
-    def decrease(self, quantity):
+    def decrease(self, quantity, status_ad, status_ms):
         if self.quantity >= quantity:
             self.quantity -= quantity
             if self.quantity <= 0:
                 self.in_stock = False
+                status_ad.goods.remove(self.pk)
+                status_ms.goods.add(self.pk)
             else:
                 self.in_stock = True
             self.save()
@@ -70,10 +90,11 @@ class Goods(models.Model):
         return False
     
     
-    def increase(self, quantity):
+    def increase(self, quantity, status):
         self.quantity += quantity
         if self.quantity > 0:
-            self.in_stock = True
+            self.in_stock = False
+            status.goods.remove(self.pk)
         self.save()
 
 

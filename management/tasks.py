@@ -20,6 +20,7 @@ def replenish_goods(goods_id, user):
 @shared_task
 def update_goods(good_id, quantity):
     good = Goods.objects.get(id = good_id)
+    
     manager = Manager.objects.get(storage = good.city)
     subject = f"Order in store"
     message = f"Please send the product {good.title} in the amount of {quantity} pieces to the city of {good.city.city} {good.city.state} {good.city.street}. Thank you."

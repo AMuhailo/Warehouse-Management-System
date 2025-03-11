@@ -6,7 +6,7 @@ from django.views.generic import CreateView, ListView, UpdateView, DeleteView, D
 from employees.models import Manager
 from django.db.models import Count
 from employees.utils import StaffURLBarrier
-from management.models import Storage, Category, Goods, Provider
+from management.models import Status, Storage, Category, Goods, Provider
 from management.tasks import replenish_goods, update_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
 from django.db.models import Q
@@ -63,6 +63,8 @@ class GoodsCreateView(CreateView):
         else:
             goods.in_stock = False
         goods.save()
+        status = Status.objects.get(name = "AD")
+        status.goods.add(goods.id)
         return super().form_valid(form)
     
     
@@ -76,14 +78,14 @@ class GoodsStorageListView(ListView):
             goods = Goods.objects\
                                 .only('id','slug','title','quantity','price')\
                                 .filter(
-                                        (Q(in_stock = True) & ~Q(quantity = 0) 
-                                        & 
-                                        Q(city = user.manager_user.storage)
-                                            ))
+                                    (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
+                                    )
         else:
             goods = Goods.objects\
                                 .only('id','slug','title','quantity','price')\
-                                .filter(Q(in_stock = True) & ~Q(quantity = 0))
+                                .filter(
+                                    (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
+                                    )
         return goods
     
     
@@ -96,13 +98,17 @@ class GoodsNotStockListView(ListView):
         if user.is_manager:
             goods = Goods.objects\
                                 .only('id','slug','title','quantity','price')\
-                                .filter((Q(in_stock = False) | Q(quantity = 0))
-                                        & 
-                                        Q(city = user.manager_user.storage))
+                                .filter(
+                                    (Q(in_stock = False) | Q(quantity = 0)) 
+                                    & 
+                                    (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
+                                    )
         else:
             goods = Goods.objects\
                                 .only('id','slug','title','quantity','price')\
-                                .filter(Q(in_stock = False) | Q(quantity = 0))
+                                .filter(
+                                    (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
+                                    )
         return goods
     
     def get_context_data(self, **kwargs):
@@ -123,11 +129,14 @@ class GoodsUpdateView(GoodsDataMixin, UpdateView):
         return form_class(data = self.request.POST or None)
     
     def form_valid(self, form):
+        status_ms = Status.objects.get(name = "MS")
+        status_sd = Status.objects.get(name = "SD")
         cd = form.cleaned_data['quantity']
         goods = get_object_or_404(Goods, 
                                   slug = self.kwargs.get('goods_slug'), 
                                   id  = self.kwargs.get('goods_pk'))
-        goods.increase(quantity = cd)
+        goods.increase(quantity = cd, status = status_ms)
+        status_sd.goods.add(goods.pk)
         update_goods.delay(goods.pk, cd)
         goods.save()
         return redirect('manage:goods_storage_url')

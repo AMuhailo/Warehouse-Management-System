@@ -30,6 +30,7 @@
                         {% if request.user.is_authenticated and request.user.is_chief %}
                         <th scope="col">Location</th>
                         {% endif %}
+                        <th scope="col">Status</th>
                     </tr>
                     </tr>
                 </thead>
@@ -45,6 +46,14 @@
                             {% if request.user.is_authenticated and request.user.is_chief %}
                                 <td>{{ good.city.code}}</td>
                             {% endif %}
+                            {% for status in good.status_goods.all %}
+                                {% if status.name == "MS" %}
+                                <td class="text-danger"><i class="bi bi-nvme"></i></td>
+                                {% else %}
+                                <td class="text-warning"><i class="bi bi-nvme-fill"></i></td>
+                                {% endif %}
+                                
+                            {% endfor %}
                         </tr>
                     {% empty %}
                         <tr>

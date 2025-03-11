@@ -1,6 +1,10 @@
 from django.contrib import admin
-from .models import Goods, Provider, Category, Storage
+from .models import Goods, Provider, Category, Storage, Status
 # Register your models here.
+@admin.register(Status)
+class StatusAdmin(admin.ModelAdmin):
+    list_display = ['name', 'date_from', 'date_to']
+
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
@@ -15,12 +19,11 @@ class StorageInLine(admin.TabularInline):
     
 @admin.register(Goods)
 class GoodsAdmin(admin.ModelAdmin):
-    list_display = ['title','quantity','price','in_stock','category','city','provider','imported','added']
-    list_filter = ['category','in_stock','provider','added','updated']
+    list_display = ['title','quantity','price','in_stock','category','city','provider']
+    list_filter = ['category','provider']
     list_editable = ['price','in_stock']
     date_hierarchy = 'added'
     prepopulated_fields = {'slug':('title',)}
-    
     
 @admin.register(Provider)
 class ProviderAdmin(admin.ModelAdmin):
