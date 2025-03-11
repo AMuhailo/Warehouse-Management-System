@@ -1,0 +1,5 @@
+<from action="{% url 'manage:add_url' good.slug good.id%}" method="POST">
+    {% csrf_token %}
+    {{ status_form.as_p}}
+    <input type='submit' value = 'Add'>
+</form>

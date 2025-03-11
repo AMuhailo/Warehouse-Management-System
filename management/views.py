@@ -8,7 +8,7 @@ from django.db.models import Count
 from employees.utils import StaffURLBarrier
 from management.models import Status, Storage, Category, Goods, Provider
 from management.tasks import replenish_goods, update_goods
-from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
+from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm, StatusUpdateForm
 from django.db.models import Q
 
 # Create your views here.
@@ -123,7 +123,7 @@ class GoodsUpdateView(GoodsDataMixin, UpdateView):
     pk_url_kwarg = 'goods_pk'
     form_class = GoodsUpdateForm
     template_name = 'management/goods/goods_update.html'
-    success_url = reverse_lazy('manage:goods_storage_url')
+    success_url = reverse_lazy('manage:goods_notstock_url')
     def get_form(self, form_class = ...):
         form_class = self.get_form_class()
         return form_class(data = self.request.POST or None)
@@ -139,9 +139,8 @@ class GoodsUpdateView(GoodsDataMixin, UpdateView):
         status_sd.goods.add(goods.pk)
         update_goods.delay(goods.pk, cd)
         goods.save()
-        return redirect('manage:goods_storage_url')
+        return redirect('manage:goods_notstock_url')
         
-
 class GoodsDeleteView(DeleteView):
     model = Goods
     template_name = 'management/goods/goods_delete.html'
@@ -161,6 +160,17 @@ def scan_goods(request, goods_slug, goods_pk, action):
     good.save()
     return JsonResponse({"massage":f"Product {good.title} updated","quantity":good.quantity})
 
+def add_storage(request, goods_slug, goods_pk):
+    good = get_object_or_404(Goods, slug = goods_slug, id = goods_pk)
+    statuses = good.status_goods.all()
+    if statuses.filter(name = "SD").exists:
+        status_sd = Status.objects.get(name = 'SD')
+        status_sd.goods.remove(good.pk)
+        status_ad = Status.objects.get(name = "AD")
+        status_ad.goods.add(good.pk)
+        good.in_stock = True
+        good.save()
+    return redirect('manage:goods_storage_url')
 
 class CategoryListView(CategoryMixin, ListView):
     template_name = 'management/category/category_list.html'

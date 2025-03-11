@@ -1,6 +1,6 @@
 from django import forms
 from employees.models import Manager
-from management.models import Goods, Provider, Storage, Category
+from management.models import Goods, Provider, Status, Storage, Category
 from django.utils.text import slugify
 
 QUANTITY_GOODS = [(q, str(q)) for q in range(25,101,25)]
@@ -20,7 +20,11 @@ class GoodsCreateForm(forms.ModelForm):
 class GoodsUpdateForm(forms.Form):
     quantity = forms.TypedChoiceField(choices = QUANTITY_GOODS, coerce = int)
         
-        
+class StatusUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Status
+        fields = ['name']        
+
 class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category

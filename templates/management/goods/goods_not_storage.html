@@ -25,14 +25,13 @@
                         <th scope="col">Gategory</th>
                         <th scope="col">Goods</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Imported</th>
                         <th scope="col">Provider</th>
                         <th scope="col">Status</th>
                         {% if request.user.is_authenticated and request.user.is_chief %}
                         <th scope="col">Location</th>
-                        <th scope="col">Full Price</th>
-                        {% endif %}
                         
+                        {% endif %}
+                        <th scope="col">Full Price</th>
                     </tr>
                     </tr>
                 </thead>
@@ -43,20 +42,22 @@
                             <th scope="row">{{ good.category}}</th>
                             <td>{{ good.title }}</td>
                             <td>{{ good.quantity }}</td>
-                            <td>{{ good.imported.date }}</td>
                             <td>{{ good.provider}}</td>
                             {% for status in good.status_goods.all %}
                                 {% if status.name == "MS" %}
                                     <td class="text-danger"><i class="bi bi-nvme"></i></td>
                                 {% else %}
-                                    <td class="text-warning"><i class="bi bi-nvme-fill"></i></td>
+                                    <td class="text-warning">
+                                        <a href="{% url 'manage:add_url' good.slug good.id%}" class="text-warning text-decoration-none">
+                                            <i class="bi bi-nvme-fill"></i>
+                                        </a>
+                                    </td>
                                 {% endif %}
                             {% endfor %}
                             {% if request.user.is_authenticated and request.user.is_chief %}
                                 <td>{{ good.city.code}}</td>
-                                <td>{{ good.full_price}}$</td>
                             {% endif %}
-                            
+                            <td>{{ good.full_price}}$</td>
                         </tr>
                     {% empty %}
                         <tr>

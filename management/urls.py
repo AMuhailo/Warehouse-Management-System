@@ -9,7 +9,8 @@ urlpatterns = [
     path('goods/created/', views.GoodsCreateView.as_view(), name = 'goods_created_url'),
     path('goods/updated/<goods_slug>/<goods_pk>/', views.GoodsUpdateView.as_view(), name = 'goods_updated_url'),
     path('goods/delete/<goods_slug>/<goods_pk>/', views.GoodsDeleteView.as_view(), name = 'goods_delete_url'),
-    path('scan/<goods_slug>/<goods_pk>/<str:action>/', views.scan_goods, name = 'goods_scan_url'),   
+    path('scan/<goods_slug>/<goods_pk>/<str:action>/', views.scan_goods, name = 'goods_scan_url'),  
+    path('storage/add/<goods_slug>/<goods_pk>/', views.add_storage, name ='add_url') 
 ]
 
 categorypatterns = [
