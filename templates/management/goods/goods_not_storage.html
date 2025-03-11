@@ -27,10 +27,12 @@
                         <th scope="col">Quantity</th>
                         <th scope="col">Imported</th>
                         <th scope="col">Provider</th>
+                        <th scope="col">Status</th>
                         {% if request.user.is_authenticated and request.user.is_chief %}
                         <th scope="col">Location</th>
+                        <th scope="col">Full Price</th>
                         {% endif %}
-                        <th scope="col">Status</th>
+                        
                     </tr>
                     </tr>
                 </thead>
@@ -43,17 +45,18 @@
                             <td>{{ good.quantity }}</td>
                             <td>{{ good.imported.date }}</td>
                             <td>{{ good.provider}}</td>
-                            {% if request.user.is_authenticated and request.user.is_chief %}
-                                <td>{{ good.city.code}}</td>
-                            {% endif %}
                             {% for status in good.status_goods.all %}
                                 {% if status.name == "MS" %}
-                                <td class="text-danger"><i class="bi bi-nvme"></i></td>
+                                    <td class="text-danger"><i class="bi bi-nvme"></i></td>
                                 {% else %}
-                                <td class="text-warning"><i class="bi bi-nvme-fill"></i></td>
+                                    <td class="text-warning"><i class="bi bi-nvme-fill"></i></td>
                                 {% endif %}
-                                
                             {% endfor %}
+                            {% if request.user.is_authenticated and request.user.is_chief %}
+                                <td>{{ good.city.code}}</td>
+                                <td>{{ good.full_price}}$</td>
+                            {% endif %}
+                            
                         </tr>
                     {% empty %}
                         <tr>
