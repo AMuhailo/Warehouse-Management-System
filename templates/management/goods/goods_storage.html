@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cache %}
 {% block title %} Storage {% endblock title %}
 {% block content %}
 <div class="row">
@@ -34,21 +35,23 @@
                         {% endif %}
                     </tr>
                 </thead>
-                <tbody>
-                    {% for good in goods %}
-                    <tr>
-                        <th scope="row"><i class="bi bi-box-seam-fill fs-4"></i></th>
-                        <th scope="row">{{ good.category}}</th>
-                        <td>{{ good.title }}</td>
-                        <td>{{ good.quantity }}</td>
-                        <td>{{ good.imported.date }}</td>
-                        <td>{{ good.provider}}</td>
-                        {% if request.user.is_authenticated and request.user.is_chief %}
-                            <td>{{ good.city.code}}</td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
+                {% cache 600 goods_content goods %}
+                    <tbody>
+                        {% for good in goods %}
+                        <tr>
+                            <th scope="row"><i class="bi bi-box-seam-fill fs-4"></i></th>
+                            <th scope="row">{{ good.category}}</th>
+                            <td>{{ good.title }}</td>
+                            <td>{{ good.quantity }}</td>
+                            <td>{{ good.imported.date }}</td>
+                            <td>{{ good.provider}}</td>
+                            {% if request.user.is_authenticated and request.user.is_chief %}
+                                <td>{{ good.city.code}}</td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endcache %}
             </table>
         </div>
     </div>

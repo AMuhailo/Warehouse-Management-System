@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cache %}
 {% block title %} Provider {% endblock title %}
 {% block content %}
 <div class="row">
@@ -29,24 +30,26 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for provider in providers %}
-                    <tr>
-                        <th scope="row">
-                            <a href="{{ provider.get_absolute_url }}">
-                                <i class="bi bi-person-badge"></i>
-                            </a>
-                        </th>
-                        <th scope="row">{{ provider.name}}</th>
-                        <td>{{ provider.agent }}</td>
-                        <td>{{ provider.email }}</td>
-                        {% if provider.number %}
-                            <td>{{ provider.number }}</td>
-                        {% else %}
-                            <td>-------------------</td>
-                        {% endif %}
-                        
-                    </tr>
-                    {% endfor %}
+                    {% cache 600 provider_contents providers %}
+                        {% for provider in providers %}
+                        <tr>
+                            <th scope="row">
+                                <a href="{{ provider.get_absolute_url }}">
+                                    <i class="bi bi-person-badge"></i>
+                                </a>
+                            </th>
+                            <th scope="row">{{ provider.name}}</th>
+                            <td>{{ provider.agent }}</td>
+                            <td>{{ provider.email }}</td>
+                            {% if provider.number %}
+                                <td>{{ provider.number }}</td>
+                            {% else %}
+                                <td>-------------------</td>
+                            {% endif %}
+
+                        </tr>
+                        {% endfor %}
+                    {% endcache %}
                 </tbody>
             </table>
         </div>

@@ -1,47 +1,17 @@
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
-from employees.models import Manager
 from django.db.models import Count
-from employees.utils import StaffURLBarrier
-from management.models import Status, Storage, Category, Goods, Provider
+from django.db.models import Q
+from django.core.cache import cache
+from management.utils import GoodsDataMixin, CategoryMixin, CategoryDataMixin, CategoryFormMixin, ProviderMixin, ProviderDataMixin
+from management.models import Status, Category, Goods, Provider
 from management.tasks import replenish_goods, update_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
-from django.db.models import Q
+
 
 # Create your views here.
-
-class GoodsDataMixin(LoginRequiredMixin):
-    model = Goods
-    success_url = reverse_lazy('manage:goods_storage_url')
-
-
-class CategoryMixin(LoginRequiredMixin):
-    model = Category
-
-
-class CategoryDataMixin(CategoryMixin):
-    context_object_name = 'category'
-    slug_url_kwarg = 'category_slug'
-    pk_url_kwarg = 'category_pk'
-    
-class CategoryFormMixin(CategoryDataMixin):    
-    template_name = 'management/category/category_create.html'
-    form_class = CategoryForm
-    success_url = reverse_lazy('manage:categories_list_url')
-    
-    
-class ProviderMixin(StaffURLBarrier):
-    model = Provider
-
-class ProviderDataMixin(ProviderMixin):
-    slug_url_kwarg = 'provider_name'
-    pk_url_kwarg = 'provider_pk'
-    context_object_name = 'provider'
-
-
 class GoodsCreateView(CreateView):
     model = Goods
     template_name = "management/goods/goods_create.html"
@@ -73,16 +43,21 @@ class GoodsStorageListView(ListView):
     template_name = "management/goods/goods_storage.html"
     def get_queryset(self):
         user = self.request.user
+        goods = cache.get('goods_cache')
         if user.is_manager:
-            goods = Goods.objects\
+            if not goods:
+                goods = Goods.objects\
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
                                     ).select_related('category','provider','city')
+                cache.set('goods_cache', goods)
         else:
-            goods = Goods.objects\
+            if not goods:
+                goods = Goods.objects\
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
                                     ).select_related('category','city','provider')
+                cache.set('goods_cache', goods)
         return goods
     
     
@@ -92,18 +67,23 @@ class GoodsNotStockListView(ListView):
     context_object_name = 'goods'
     def get_queryset(self):
         user = self.request.user
+        notstock = cache.get('notstock_cache')
         if user.is_manager:
-            goods = Goods.objects\
+            if not notstock:
+                goods = Goods.objects\
                                 .filter(
                                     (Q(in_stock = False) | Q(quantity = 0)) 
                                     & 
                                     (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
                                     ).select_related('category','city','provider').prefetch_related("status_goods")
+                cache.set('notstock_cache', goods)
         else:
-            goods = Goods.objects\
+            if not notstock:
+                goods = Goods.objects\
                                 .filter(
                                     (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
                                     ).select_related('category','city','provider').prefetch_related("status_goods")
+                cache.set('notstock_cache', goods)                    
         return goods
     
     def get_context_data(self, **kwargs):
@@ -170,7 +150,14 @@ def add_storage(request, goods_slug, goods_pk):
 class CategoryListView(CategoryMixin, ListView):
     template_name = 'management/category/category_list.html'
     context_object_name = 'categories'
-    queryset = Category.objects.all().annotate(category = Count('goods'))
+    
+    def get_queryset(self):
+        categories = cache.get('categories')
+        if not categories:
+            categories = Category.objects.all().annotate(category = Count('goods'))
+            cache.set('categories',categories)
+        return categories
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["form"] = CategoryForm 
@@ -192,8 +179,12 @@ class CategoryUpdateView(CategoryFormMixin, UpdateView): pass
 class ProviderListView(ProviderMixin, ListView):
     context_object_name = 'providers'
     template_name = 'management/provider/provider_list.html'
-    queryset = Provider.objects.only('id','name','agent','email','number')
-
+    def get_queryset(self):
+        provider = cache.get('provider')
+        if not provider:
+            provider = Provider.objects.only('id','name','agent','email','number')
+            cache.set('provider',provider)
+        return provider
 
 class ProviderDetailView(ProviderDataMixin, DetailView):
     template_name = 'management/provider/provider_detail.html'

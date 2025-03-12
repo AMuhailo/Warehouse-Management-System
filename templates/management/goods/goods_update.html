@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cache %}
 {% block title %} Out of Stock {% endblock title %}
 {% block content %}
 <div class="row">
@@ -33,25 +34,27 @@
                     </tr>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <th scope="row"><i class="bi bi-inboxes-fill"></i></th>
-                        <th scope="row">{{ good.category}}</th>
-                        <td>{{ good.title }}</td>
-                        <td>
-                            <form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
-                                {% csrf_token %}
-                                {{ form.as_p }}
-                                <input type='submit' value='update'>
-                            </form>
-                        </td>
-                        <td>{{ good.imported.date }}</td>
-                        <td>{{ good.provider}}</td>
-                        {% if request.user.is_authenticated and request.user.is_chief %}
-                            <td>{{ good.city.code}}</td>
-                        {% endif %}
-                    </tr>
-                </tbody>
+                {% cache 600 good_update good %}
+                    <tbody>
+                        <tr>
+                            <th scope="row"><i class="bi bi-inboxes-fill"></i></th>
+                            <th scope="row">{{ good.category}}</th>
+                            <td>{{ good.title }}</td>
+                            <td>
+                                <form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
+                                    {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <input type='submit' value='update'>
+                                </form>
+                            </td>
+                            <td>{{ good.imported.date }}</td>
+                            <td>{{ good.provider}}</td>
+                            {% if request.user.is_authenticated and request.user.is_chief %}
+                                <td>{{ good.city.code}}</td>
+                            {% endif %}
+                        </tr>
+                    </tbody>
+                {% endcache %}
             </table>
         </div>
     </div>

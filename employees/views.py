@@ -3,55 +3,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy, reverse
-from django.db.models import Count
-from django.views.generic import CreateView, UpdateView, \
-                                 ListView, DetailView, \
-                                 DeleteView, FormView
-from employees.utils import StaffURLBarrier
-from employees.forms import ManagerCreateForm, ManagerUpdateForm, \
-                            RegisterForm, WorkerCreateForm, \
-                            AsignWorkerManager, CategoryUpdateForm
-from employees.models import Category, Profile, Worker, Manager
+from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView, FormView
+from employees.utils import WorkerDataMixin, WorkerFilterMixin, ManagerDataMixin, ManagerMixin
+from employees.forms import ManagerCreateForm, ManagerUpdateForm, RegisterForm, WorkerCreateForm, AsignWorkerManager, CategoryUpdateForm
+from employees.models import Category, Worker, Manager
+
 # Create your views here
 
 User = get_user_model()
-
-
-"""  These mixins are used to optimize class workers  """
-class WorkerDataMixin:
-    model = Worker
-    context_object_name = 'worker'
-    success_url = reverse_lazy('emp:worker_list_url')
-    pk_url_kwarg = 'worker_pk'
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.update({
-            'request':self.request
-        })
-        return kwargs
-
-class WorkerFilterMixin:
-    def get_queryset(self):
-        user = self.request.user
-        if user.is_chief:
-            queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
-        else:
-            queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
-            queryset = queryset.filter(manager__user = user)
-        return queryset
-    
-"""  These mixins are used to optimize class manager  """
-class ManagerMixin(StaffURLBarrier):
-    model = Manager
-    def get_queryset(self):
-        return Manager.objects.filter(organisation = self.request.user.profiles)\
-                                .annotate(workers = Count('worker_manager'))\
-                                .select_related('user','storage')
-
-class ManagerDataMixin(ManagerMixin):
-    context_object_name = 'manager'
-    pk_url_kwarg = 'manager_pk'
 
 
 
@@ -145,6 +104,7 @@ class CategoryyUpdateView(WorkerFilterMixin, UpdateView):
     pk_url_kwarg = 'worker_pk'
     def get_success_url(self):
         return reverse('emp:worder_detail_url', args = [self.kwargs.get('worker_pk')])
+    
 """ MANAGER """
 class ManagerListView(LoginRequiredMixin, ManagerMixin, ListView):
     context_object_name = 'managers'

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load cache %}
 {% block title %} Provider {{ provider.name }}{% endblock title  %}
 
 {% block content %}
@@ -18,48 +18,50 @@
                     </li>
                 </ul>
             </div>
-            <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
-                <p class="card-text d-flex flex-column">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <h5 class="card-title d-flex flex-row align-items-center m-0">
-                                <a href="{% url 'manage:provider_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
-                                <strong>Name:</strong>
-                                <span class='ms-auto'>{{ provider.name }}</span>
-                            </h5>
-                        </li>
-                        <li class="list-group-item">
-                            <p class="d-flex flex-row align-items-center m-0">
-                                <strong>Agent: </strong>
-                                <span class="ms-auto">{{ provider.agent }}</span>
-                            </p>
-                        </li>
-                        <li class="list-group-item">
-                            <p class="d-flex flex-row align-items-center m-0">
-                                <strong>Number: </strong>
-                                {% if provider.number %}
-                                    <span class="ms-auto">{{ provider.number }}</span>
-                                {% else %}
-                                    <span class="ms-auto">-------------------</span>
-                                {% endif %}
-                                
-                            </p>
-                        </li>
-                        <li class="list-group-item">
-                            <p class="d-flex flex-row align-items-center m-0">
-                                <strong>Location: </strong>
-                                <span class="ms-auto">{{ provider.location }}</span>
-                            </p>
-                        </li>
-                        <li class="list-group-item">
-                            <p class="d-flex flex-row align-items-center m-0">
-                                <strong>Email: </strong>
-                                <span class="ms-auto">{{ provider.email }}</span>
-                            </p>
-                        </li>
-                    </ul>
-                </p>
-            </div>
+            {% cache 600 provider_detail provider %}
+                <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
+                    <p class="card-text d-flex flex-column">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <h5 class="card-title d-flex flex-row align-items-center m-0">
+                                    <a href="{% url 'manage:provider_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+                                    <strong>Name:</strong>
+                                    <span class='ms-auto'>{{ provider.name }}</span>
+                                </h5>
+                            </li>
+                            <li class="list-group-item">
+                                <p class="d-flex flex-row align-items-center m-0">
+                                    <strong>Agent: </strong>
+                                    <span class="ms-auto">{{ provider.agent }}</span>
+                                </p>
+                            </li>
+                            <li class="list-group-item">
+                                <p class="d-flex flex-row align-items-center m-0">
+                                    <strong>Number: </strong>
+                                    {% if provider.number %}
+                                        <span class="ms-auto">{{ provider.number }}</span>
+                                    {% else %}
+                                        <span class="ms-auto">-------------------</span>
+                                    {% endif %}
+                                    
+                                </p>
+                            </li>
+                            <li class="list-group-item">
+                                <p class="d-flex flex-row align-items-center m-0">
+                                    <strong>Location: </strong>
+                                    <span class="ms-auto">{{ provider.location }}</span>
+                                </p>
+                            </li>
+                            <li class="list-group-item">
+                                <p class="d-flex flex-row align-items-center m-0">
+                                    <strong>Email: </strong>
+                                    <span class="ms-auto">{{ provider.email }}</span>
+                                </p>
+                            </li>
+                        </ul>
+                    </p>
+                </div>
+            {% endcache %}
         </div>
     </div>
 {% endblock content %}

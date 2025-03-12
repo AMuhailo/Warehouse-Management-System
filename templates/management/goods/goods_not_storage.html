@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cache %}
 {% block title %} Out of Stock {% endblock title %}
 {% block content %}
 <div class="row">
@@ -8,7 +9,7 @@
             <h4 class="d-flex flex-column">
                 Out of Stock
                 <span>
-                    <a href='' class='display-6 fs-6 text-secondary text-decoration-none'>
+                    <a href="{% url 'manage:categories_list_url'%}" class='display-6 fs-6 text-secondary text-decoration-none'>
                         View goods categories
                     </a>
                 </span>
@@ -35,36 +36,38 @@
                     </tr>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for good in goods %}
-                        <tr>
-                            <th scope="row"><a href="{% url 'manage:goods_updated_url' good.slug good.id%}" class='text-decoration-none'><i class="bi bi-inboxes-fill"></i></a></th>
-                            <th scope="row">{{ good.category}}</th>
-                            <td>{{ good.title }}</td>
-                            <td>{{ good.quantity }}</td>
-                            <td>{{ good.provider}}</td>
-                            {% for status in good.status_goods.all %}
-                                {% if status.name == "MS" %}
-                                    <td class="text-danger"><i class="bi bi-nvme"></i></td>
-                                {% else %}
-                                    <td class="text-warning">
-                                        <a href="{% url 'manage:add_url' good.slug good.id%}" class="text-warning text-decoration-none">
-                                            <i class="bi bi-nvme-fill"></i>
-                                        </a>
-                                    </td>
+                {% cache 600 goods_content goods %}
+                    <tbody>
+                        {% for good in goods %}
+                            <tr>
+                                <th scope="row"><a href="{% url 'manage:goods_updated_url' good.slug good.id%}" class='text-decoration-none'><i class="bi bi-inboxes-fill"></i></a></th>
+                                <th scope="row">{{ good.category}}</th>
+                                <td>{{ good.title }}</td>
+                                <td>{{ good.quantity }}</td>
+                                <td>{{ good.provider}}</td>
+                                {% for status in good.status_goods.all %}
+                                    {% if status.name == "MS" %}
+                                        <td class="text-danger"><i class="bi bi-nvme"></i></td>
+                                    {% else %}
+                                        <td class="text-warning">
+                                            <a href="{% url 'manage:add_url' good.slug good.id%}" class="text-warning text-decoration-none">
+                                                <i class="bi bi-nvme-fill"></i>
+                                            </a>
+                                        </td>
+                                    {% endif %}
+                                {% endfor %}
+                                {% if request.user.is_authenticated and request.user.is_chief %}
+                                    <td>{{ good.city.code}}</td>
                                 {% endif %}
-                            {% endfor %}
-                            {% if request.user.is_authenticated and request.user.is_chief %}
-                                <td>{{ good.city.code}}</td>
-                            {% endif %}
-                            <td>{{ good.full_price}}$</td>
-                        </tr>
-                    {% empty %}
-                        <tr>
-                            <td colspan="7" class='text-center fs-4'>All goods on storage</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
+                                <td>{{ good.full_price}}$</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class='text-center fs-4'>All goods on storage</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                {% endcache %}
             </table>
         </div>
     </div>
