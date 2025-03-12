@@ -19,11 +19,7 @@ class GoodsCreateForm(forms.ModelForm):
             
 class GoodsUpdateForm(forms.Form):
     quantity = forms.TypedChoiceField(choices = QUANTITY_GOODS, coerce = int)
-        
-class StatusUpdateForm(forms.ModelForm):
-    class Meta:
-        model = Status
-        fields = ['name']        
+            
 
 class CategoryForm(forms.ModelForm):
     class Meta:

@@ -9,7 +9,8 @@ urlpatterns = [
     path('worker/update/<worker_pk>/', views.WorkerUpdateView.as_view(), name = 'worker_update_url'),
     path('worker/<worker_pk>/', views.WorkerDetailView.as_view(), name = 'worder_detail_url'),
     path('worker/delete/<worker_pk>/', views.WorkerDeleteView.as_view(), name = 'worker_delete_url'),
-    path('worker/asign/<worker_pk>/', views.WorkerAsignFormView.as_view(), name = 'worker_asign_url')
+    path('worker/asign/<worker_pk>/', views.WorkerAsignFormView.as_view(), name = 'worker_asign_url'),
+    path('worker/category/<worker_pk>/', views.CategoryyUpdateView.as_view(), name = 'category_worker_url')
 ]
 
 managerpatterns = [

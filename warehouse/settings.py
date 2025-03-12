@@ -32,9 +32,12 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,12 +45,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    "debug_toolbar",
     'management.apps.ManagementConfig',
     'employees.apps.EmployeesConfig',
     'orders.apps.OrdersConfig',
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -55,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    
 ]
 
 ROOT_URLCONF = 'warehouse.urls'
@@ -139,6 +145,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'manage:goods_storage_url'
 LOGOUT_URL = 'logout'
 LOGOUT_REDIRECT_URL = 'login'
+
 #Celery worker
 CELERY_TIMEZONE = "Australia/Tasmania"
 CELERY_TASK_TRACK_STARTED = True
@@ -147,6 +154,13 @@ CELERY_BROKER_URL = 'redis://localhost:6379/0'
 CELERY_BROCKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TIMEZONE = "UTC"
 
+#Cache 
+CACHES = {
+    'default':{
+        'BACKEND':'django.core.cache.backends.memcached.PyMemcacheCache',
+        'LOCATION':'127.0.0.1:11211',
+    }
+}
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 

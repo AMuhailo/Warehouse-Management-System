@@ -4,9 +4,13 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth import get_user_model
 from django.urls import reverse_lazy, reverse
 from django.db.models import Count
-from django.views.generic import CreateView, UpdateView, ListView, DetailView, DeleteView, FormView
+from django.views.generic import CreateView, UpdateView, \
+                                 ListView, DetailView, \
+                                 DeleteView, FormView
 from employees.utils import StaffURLBarrier
-from employees.forms import ManagerCreateForm, ManagerUpdateForm, RegisterForm, WorkerCreateForm, AsignWorkerManager
+from employees.forms import ManagerCreateForm, ManagerUpdateForm, \
+                            RegisterForm, WorkerCreateForm, \
+                            AsignWorkerManager, CategoryUpdateForm
 from employees.models import Category, Profile, Worker, Manager
 # Create your views here
 
@@ -31,9 +35,9 @@ class WorkerFilterMixin:
     def get_queryset(self):
         user = self.request.user
         if user.is_chief:
-            queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False)
+            queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
         else:
-            queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False)
+            queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
             queryset = queryset.filter(manager__user = user)
         return queryset
     
@@ -41,7 +45,9 @@ class WorkerFilterMixin:
 class ManagerMixin(StaffURLBarrier):
     model = Manager
     def get_queryset(self):
-        return Manager.objects.filter(organisation = self.request.user.profiles).annotate(workers = Count('worker_manager'))
+        return Manager.objects.filter(organisation = self.request.user.profiles)\
+                                .annotate(workers = Count('worker_manager'))\
+                                .select_related('user','storage')
 
 class ManagerDataMixin(ManagerMixin):
     context_object_name = 'manager'
@@ -70,12 +76,12 @@ class WorkerListView(WorkerFilterMixin,  ListView):
     model = Worker
     template_name = "employees/worker/worker_list.html"
     context_object_name = 'workers'
-    
     def get_context_data(self, **kwargs):
         user = self.request.user
         context = super().get_context_data(**kwargs)
         context["unassigned_workes"] = Worker.objects.filter(organisation = user.profiles , manager__isnull = True)
         return context
+    
 
 
 class WorkerCreateView(WorkerDataMixin, WorkerFilterMixin, CreateView):
@@ -86,7 +92,7 @@ class WorkerCreateView(WorkerDataMixin, WorkerFilterMixin, CreateView):
     def form_valid(self, form):
         user = self.request.user
         cd = form.cleaned_data
-        category = get_object_or_404(Category, title = 'worker')
+        category = get_object_or_404(Category, title = 'trainee')
         worker = form.save(commit = False)
         worker.manager = cd['manager']
         worker.organisation = user.manager_user.organisation
@@ -110,7 +116,6 @@ class WorkerDeleteView(WorkerDataMixin, WorkerFilterMixin, DeleteView):
     template_name = "employees/worker/worker_delete.html"
 
 
-
 class WorkerAsignFormView(FormView):
     template_name = "employees/worker/worker_asign.html"
     form_class = AsignWorkerManager
@@ -132,7 +137,14 @@ class WorkerAsignFormView(FormView):
         worker.save()
         return super(WorkerAsignFormView, self).form_valid(form)
     
-    
+class CategoryyUpdateView(WorkerFilterMixin, UpdateView):
+    model = Worker
+    form_class = CategoryUpdateForm
+    template_name = "employees/worker/worker_category.html"
+    context_object_name = 'worker'
+    pk_url_kwarg = 'worker_pk'
+    def get_success_url(self):
+        return reverse('emp:worder_detail_url', args = [self.kwargs.get('worker_pk')])
 """ MANAGER """
 class ManagerListView(LoginRequiredMixin, ManagerMixin, ListView):
     context_object_name = 'managers'

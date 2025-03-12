@@ -59,3 +59,9 @@ class ManagerUpdateForm(forms.ModelForm):
     class Meta:
         model = Manager
         exclude = ['organisation']
+        
+        
+class CategoryUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Worker
+        fields = ['category']

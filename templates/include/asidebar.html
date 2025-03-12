@@ -1,6 +1,6 @@
 <div class="col-sm-2">
     <ul class="nav flex-column gap-2">
-        {% if  request.user.is_manager or request.user.is_chief%}
+        {% if  request.user.is_manager%}
             <li class="nav-item">
                 <a class="nav-link active" aria-current="page" href="{% url 'manage:goods_storage_url'%}">Storage</a>
             </li>
@@ -13,7 +13,16 @@
         {% endif %}
         {% if  request.user.is_chief %}
             <li class="nav-item">
+                <a class="nav-link" href="{% url 'manage:goods_notstock_url' %}">Not in stock</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'emp:manager_list_url'%}">Manager</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'manage:provider_list_url'%}">Provider</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'emp:worker_list_url'%}">Worker</a>
             </li>
         {% endif %}
     </ul>

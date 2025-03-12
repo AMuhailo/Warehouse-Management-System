@@ -11,10 +11,10 @@
                     <a class="nav-link text-dark" href="{% url 'emp:worder_detail_url' worker.id %}">Worker</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="{% url 'emp:category_worker_url' worker.id%}">Category</a>
+                    <a class="nav-link text-dark active">Category</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark active">Edit</a>
+                    <a class="nav-link text-dark" href="{% url 'emp:worker_update_url' worker.id %}" >Edit</a>
                 </li>
             </ul>
         </div>

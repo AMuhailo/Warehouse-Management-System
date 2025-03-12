@@ -17,8 +17,10 @@ class Profile(models.Model):
     
 class Category(models.Model):
     CATEGORY_CHOICES = (
-        ('worker', "Worker"),
-        ('manager', "Manager"),
+        ('trainee', "Trainee"),
+        ('loader', "Loader"),
+        ('driver','Driver'),
+        ('guardian','Guardian')
     )
     title = models.CharField(max_length=10, choices = CATEGORY_CHOICES, default='worker')
     organisation = models.ForeignKey(Profile, on_delete = models.CASCADE, related_name = 'category_organisation')

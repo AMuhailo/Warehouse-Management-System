@@ -8,7 +8,7 @@ from django.db.models import Count
 from employees.utils import StaffURLBarrier
 from management.models import Status, Storage, Category, Goods, Provider
 from management.tasks import replenish_goods, update_goods
-from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm, StatusUpdateForm
+from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
 from django.db.models import Q
 
 # Create your views here.
@@ -26,8 +26,7 @@ class CategoryDataMixin(CategoryMixin):
     context_object_name = 'category'
     slug_url_kwarg = 'category_slug'
     pk_url_kwarg = 'category_pk'
-
-
+    
 class CategoryFormMixin(CategoryDataMixin):    
     template_name = 'management/category/category_create.html'
     form_class = CategoryForm
@@ -76,16 +75,14 @@ class GoodsStorageListView(ListView):
         user = self.request.user
         if user.is_manager:
             goods = Goods.objects\
-                                .only('id','slug','title','quantity','price')\
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
-                                    )
+                                    ).select_related('category','provider','city')
         else:
             goods = Goods.objects\
-                                .only('id','slug','title','quantity','price')\
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
-                                    )
+                                    ).select_related('category','city','provider')
         return goods
     
     
@@ -97,18 +94,16 @@ class GoodsNotStockListView(ListView):
         user = self.request.user
         if user.is_manager:
             goods = Goods.objects\
-                                .only('id','slug','title','quantity','price')\
                                 .filter(
                                     (Q(in_stock = False) | Q(quantity = 0)) 
                                     & 
                                     (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
-                                    )
+                                    ).select_related('category','city','provider').prefetch_related("status_goods")
         else:
             goods = Goods.objects\
-                                .only('id','slug','title','quantity','price')\
                                 .filter(
                                     (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
-                                    )
+                                    ).select_related('category','city','provider').prefetch_related("status_goods")
         return goods
     
     def get_context_data(self, **kwargs):
@@ -184,7 +179,9 @@ class CategoryListView(CategoryMixin, ListView):
     
 class CategoryDetailView(CategoryDataMixin, DetailView):
     template_name = 'management/category/category_detail.html'
-    
+    def get_object(self, queryset = ...):
+        category = Category.objects.prefetch_related('goods_set__provider','goods_set__city')
+        return get_object_or_404(category, slug = self.kwargs.get('category_slug'), id = self.kwargs.get('category_pk'))
     
 class CategoryCreateView(CategoryFormMixin, CreateView): pass
     

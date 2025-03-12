@@ -29,6 +29,7 @@ urlpatterns = [
     path('management/', include('management.urls', namespace = 'manage')), 
     path('employees/', include('employees.urls', namespace = 'emp')),
     path('orders/', include('orders.urls', namespace = 'ord')),
+    path('__debug__/', include('debug_toolbar.urls')),
 ]
 
 if settings.DEBUG:
