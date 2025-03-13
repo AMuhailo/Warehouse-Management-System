@@ -2,6 +2,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import redirect
 from django.db.models import Count
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from employees.models import Category, Profile, Worker, Manager
 
@@ -13,7 +14,7 @@ class StaffURLBarrier(AccessMixin):
         return super().dispatch(request, *args, **kwargs)
     
 """  These mixins are used to optimize class workers  """
-class WorkerDataMixin:
+class WorkerDataMixin(LoginRequiredMixin):
     model = Worker
     context_object_name = 'worker'
     success_url = reverse_lazy('emp:worker_list_url')
@@ -26,7 +27,7 @@ class WorkerDataMixin:
         })
         return kwargs
 
-class WorkerFilterMixin:
+class WorkerFilterMixin(LoginRequiredMixin):
     def get_queryset(self):
         user = self.request.user
         queryset = cache.get('queryset')

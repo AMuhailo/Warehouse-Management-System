@@ -10,8 +10,11 @@ urlpatterns = [
     path('worker/<worker_pk>/', views.WorkerDetailView.as_view(), name = 'worder_detail_url'),
     path('worker/delete/<worker_pk>/', views.WorkerDeleteView.as_view(), name = 'worker_delete_url'),
     path('worker/asign/<worker_pk>/', views.WorkerAsignFormView.as_view(), name = 'worker_asign_url'),
-    path('worker/category/<worker_pk>/', views.CategoryyUpdateView.as_view(), name = 'category_worker_url')
+    path('worker/category/<worker_pk>/', views.CategoryyUpdateView.as_view(), name = 'category_worker_url'),
+    path('worker-csv/', views.worker_csv, name ='worker_csv_url'),
+    path('import-worker-csv/', views.worker_import_csv, name ='worker_import_csv_url'),
 ]
+
 
 managerpatterns = [
     path('manager/', views.ManagerListView.as_view(), name = 'manager_list_url'),

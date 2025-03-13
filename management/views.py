@@ -1,4 +1,7 @@
-from django.http import JsonResponse
+import csv
+from datetime import datetime
+from django.http import JsonResponse , HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
@@ -6,13 +9,13 @@ from django.db.models import Count
 from django.db.models import Q
 from django.core.cache import cache
 from management.utils import GoodsDataMixin, CategoryMixin, CategoryDataMixin, CategoryFormMixin, ProviderMixin, ProviderDataMixin
-from management.models import Status, Category, Goods, Provider
+from management.models import Status, Category, Goods, Provider, Storage
 from management.tasks import replenish_goods, update_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
 
 
 # Create your views here.
-class GoodsCreateView(CreateView):
+class GoodsCreateView(LoginRequiredMixin, CreateView):
     model = Goods
     template_name = "management/goods/goods_create.html"
     form_class = GoodsCreateForm
@@ -37,7 +40,7 @@ class GoodsCreateView(CreateView):
         return super().form_valid(form)
     
     
-class GoodsStorageListView(ListView):  
+class GoodsStorageListView(LoginRequiredMixin, ListView):  
     model = Goods
     context_object_name = 'goods'
     template_name = "management/goods/goods_storage.html"
@@ -50,40 +53,36 @@ class GoodsStorageListView(ListView):
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
                                     ).select_related('category','provider','city')
-                cache.set('goods_cache', goods)
+                cache.set('goods_cache', goods, 20)
         else:
             if not goods:
                 goods = Goods.objects\
                                 .filter(
                                     (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
                                     ).select_related('category','city','provider')
-                cache.set('goods_cache', goods)
+                cache.set('goods_cache', goods, 20)
         return goods
     
     
-class GoodsNotStockListView(ListView):   
+class GoodsNotStockListView(LoginRequiredMixin, ListView):   
     model = Goods
     template_name = "management/goods/goods_not_storage.html"
     context_object_name = 'goods'
     def get_queryset(self):
         user = self.request.user
-        notstock = cache.get('notstock_cache')
         if user.is_manager:
-            if not notstock:
-                goods = Goods.objects\
-                                .filter(
-                                    (Q(in_stock = False) | Q(quantity = 0)) 
-                                    & 
-                                    (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
-                                    ).select_related('category','city','provider').prefetch_related("status_goods")
-                cache.set('notstock_cache', goods)
+            goods = Goods.objects\
+                            .filter(
+                                (Q(in_stock = False) | Q(quantity = 0)) 
+                                & 
+                                (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
+                                ).select_related('category','city','provider').prefetch_related("status_goods")
         else:
-            if not notstock:
-                goods = Goods.objects\
-                                .filter(
-                                    (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
-                                    ).select_related('category','city','provider').prefetch_related("status_goods")
-                cache.set('notstock_cache', goods)                    
+            goods = Goods.objects\
+                            .filter(
+                                (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
+                                ).select_related('category','city','provider').prefetch_related("status_goods")
+                 
         return goods
     
     def get_context_data(self, **kwargs):
@@ -116,7 +115,7 @@ class GoodsUpdateView(GoodsDataMixin, UpdateView):
         goods.save()
         return redirect('manage:goods_notstock_url')
         
-class GoodsDeleteView(DeleteView):
+class GoodsDeleteView(LoginRequiredMixin, DeleteView):
     model = Goods
     template_name = 'management/goods/goods_delete.html'
     context_object_name = 'good'
@@ -203,3 +202,63 @@ class ProviderUpdateView(ProviderDataMixin, UpdateView):
     
     def get_success_url(self):
         return reverse('manage:provider_detail_url', args=[self.kwargs.get('provider_name'), self.kwargs.get('provider_pk')])
+    
+    
+def storage_csv(request):
+    response = HttpResponse(content_type = 'text/csv')
+    response['Content-Disposition'] = "attachment; filename=storage_goods.csv"
+    
+    writer = csv.writer(response)
+    writer.writerow(['ID', 'Category', 'Title', 'Quantity', 'Price', 'In Stock', 'City', 'Provider', 'Imported'])
+    goods = Goods.objects.all().values_list('id','category','title','quantity','price','in_stock','city','provider','imported')
+    for good in goods:
+        writer.writerow(good)
+    return response
+
+def instock_storage_csv(request):
+    response = HttpResponse(content_type = 'text/csv')
+    response['Content-Disposition'] = f"attachment; filename=not-torage-{datetime.now()}.csv"    
+    writer = csv.writer(response)
+    user = request.user
+    writer.writerow(['ID', 'Category', 'Title', 'Quantity', 'Price', 'In Stock', 'Status', 'City', 'Provider', 'Imported'])
+    if user.is_manager:
+        goods = Goods.objects\
+                        .filter(
+                            (Q(in_stock = False) | Q(quantity = 0)) 
+                            & 
+                            (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
+                            ).select_related('category','city','provider').prefetch_related("status_goods").values_list('id','category__name','title','quantity','price','in_stock','status_goods__name','city__city','provider__name','imported')
+    else:
+        goods = Goods.objects\
+                        .filter(
+                            (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
+                            ).select_related('category','city','provider').prefetch_related("status_goods").values_list('id','category__name','title','quantity','price','in_stock','status_goods__name','city__city','provider__name','imported')
+    for good in goods:
+        writer.writerow(good)
+    return response
+
+
+def storage_import_csv(request):
+    if request.method == "POST" and request.FILES.get('file'):
+        csv_f = request.FILES['file']
+        file = csv_f.read().decode('utf-8').splitlines()
+        reader = csv.reader(file)
+        next(reader)
+        
+        for row in reader:
+            category = get_object_or_404(Category, id=row[1])
+            city = get_object_or_404(Storage, id=row[6])
+            provider = get_object_or_404(Provider, id=row[7])
+            
+            Goods.objects.create(category = category,
+                                 title = row[2],
+                                 slug = row[2].lower().replace(" ", "-"),
+                                 quantity = row[3],
+                                 price = row[4],
+                                 in_stock = row[5],
+                                 city = city,
+                                 provider = provider,
+                                 imported = row[8])
+        return redirect('manage:goods_storage_url')
+    return render(request,'management/goods/import_csv.html')
+            
