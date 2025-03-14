@@ -1,5 +1,19 @@
-<form active = "{% url 'manage:goods_created_url'%}" method = 'POST'>
-    {% csrf_token %}
-    {{ form.as_p }}
-    <input type='submit' value='Add'>
-</form>
+{% extends "base.html" %}
+
+{% block title %}Add Goods{% endblock title  %}
+
+{% block content %}
+<div class="container-lg container-md mx-auto">
+    <div class="row card text-center">
+        <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
+            <p class="card-text d-flex flex-column">
+                <form active = "{% url 'manage:goods_created_url'%}" method = 'POST'>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type='submit' value='Add' class='btn btn-sm btn-primary'>
+                </form>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock content %}

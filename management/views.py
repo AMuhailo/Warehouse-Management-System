@@ -7,7 +7,6 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
 from django.db.models import Count
 from django.db.models import Q
-from django.core.cache import cache
 from management.utils import GoodsDataMixin, CategoryMixin, CategoryDataMixin, CategoryFormMixin, ProviderMixin, ProviderDataMixin
 from management.models import Status, Category, Goods, Provider, Storage
 from management.tasks import replenish_goods, update_goods
@@ -136,10 +135,7 @@ class CategoryListView(CategoryMixin, ListView):
     context_object_name = 'categories'
     
     def get_queryset(self):
-        categories = cache.get('categories')
-        if not categories:
-            categories = Category.objects.all().annotate(category = Count('goods'))
-            cache.set('categories',categories)
+        categories = Category.objects.all().annotate(category = Count('goods'))
         return categories
     
     def get_context_data(self, **kwargs):
@@ -192,7 +188,7 @@ def storage_csv(request):
     
     writer = csv.writer(response)
     writer.writerow(['ID', 'Category', 'Title', 'Quantity', 'Price', 'In Stock', 'City', 'Provider', 'Imported'])
-    goods = Goods.objects.all().values_list('id','category','title','quantity','price','in_stock','city','provider','imported')
+    goods = Goods.objects.all().values_list('id','category__name','title','quantity','price','in_stock','city__city','provider__name','imported')
     for good in goods:
         writer.writerow(good)
     return response

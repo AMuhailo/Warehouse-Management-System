@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load cache %}
 {% block title %} Out of Stock {% endblock title %}
 {% block content %}
 <div class="row">
@@ -40,10 +39,12 @@
                             <th scope="row">{{ good.category}}</th>
                             <td>{{ good.title }}</td>
                             <td>
-                                <form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST'>
+                                <form active = "{% url 'manage:goods_updated_url' good.slug good.id %}" method = 'POST' class='d-flex'>
                                     {% csrf_token %}
-                                    {{ form.as_p }}
-                                    <input type='submit' value='update'>
+                                    {% for field in form  %}
+                                        {{field}}
+                                    {% endfor %}
+                                    <input type='submit' value='update' class="btn btn-warning">
                                 </form>
                             </td>
                             <td>{{ good.imported.date }}</td>

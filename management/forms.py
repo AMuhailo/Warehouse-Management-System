@@ -8,6 +8,31 @@ class GoodsCreateForm(forms.ModelForm):
     class Meta:
         model = Goods
         exclude = ['slug','in_stock','imported', 'added','updated','qr_code']
+        widgets = {
+            "category":forms.Select(attrs={
+                "class":'form-select'
+            }),
+            "image":forms.FileInput(attrs={
+                "class":'"form-control"',
+                "id":'inputGroupFile01'
+            }),
+            "title":forms.TextInput(attrs={
+                "class":'form-control',
+            }),
+            "quantity":forms.NumberInput(attrs={
+                "class":'form-control',
+            }),
+            "price":forms.NumberInput(attrs={
+                "class":'form-control',
+            }),
+            "city":forms.Select(attrs={
+                "class":'form-select'
+            }),
+            "provider":forms.Select(attrs={
+                "class":'form-select'
+            }),
+        }
+
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super(GoodsCreateForm, self).__init__(*args, **kwargs)
@@ -19,7 +44,7 @@ class GoodsCreateForm(forms.ModelForm):
             
 class GoodsUpdateForm(forms.Form):
     quantity = forms.TypedChoiceField(choices = QUANTITY_GOODS, coerce = int)
-            
+    quantity.widget.attrs.update({'class':'form-select w-50'})            
 
 class CategoryForm(forms.ModelForm):
     class Meta:

@@ -3,7 +3,6 @@ from django.contrib.auth.mixins import AccessMixin
 from django.shortcuts import redirect
 from django.db.models import Count
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.cache import cache
 from employees.models import Category, Profile, Worker, Manager
 
 
@@ -30,30 +29,24 @@ class WorkerDataMixin(LoginRequiredMixin):
 class WorkerFilterMixin(LoginRequiredMixin):
     def get_queryset(self):
         user = self.request.user
-        queryset = cache.get('queryset')
         if user.is_chief:
-            if not queryset:
-                queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False)\
+            queryset = self.model.objects.filter(organisation = user.profiles, manager__isnull = False)\
                                                     .select_related('storage','category','organisation','manager','manager__user')
-                cache.set('queryset',queryset)
                 
         else:
-            if not queryset:
-                queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
-                queryset = queryset.filter(manager__user = user)
-                cache.set('queryset',queryset)
+            queryset = self.model.objects.filter(organisation = user.manager_user.organisation, manager__isnull = False).select_related('storage','category','organisation','manager','manager__user')
+            queryset = queryset.filter(manager__user = user)
         return queryset
     
 """  These mixins are used to optimize class manager  """
 class ManagerMixin(StaffURLBarrier):
     model = Manager
     def get_queryset(self):
-        manager = cache.get('manager')
-        if not manager:
-            manager = Manager.objects.filter(organisation = self.request.user.profiles)\
+  
+        manager = Manager.objects.filter(organisation = self.request.user.profiles)\
                                 .annotate(workers = Count('worker_manager'))\
                                 .select_related('user','storage')
-            cache.set('manager', manager)
+
         return manager
 
 class ManagerDataMixin(ManagerMixin):
