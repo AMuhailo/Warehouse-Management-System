@@ -30,7 +30,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% cache 600 provider_contents providers %}
                         {% for provider in providers %}
                         <tr>
                             <th scope="row">
@@ -49,7 +48,6 @@
 
                         </tr>
                         {% endfor %}
-                    {% endcache %}
                 </tbody>
             </table>
         </div>

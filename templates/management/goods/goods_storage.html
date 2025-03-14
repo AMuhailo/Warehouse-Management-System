@@ -37,23 +37,21 @@
                         {% endif %}
                     </tr>
                 </thead>
-                {% cache 600 goods_content goods %}
-                    <tbody>
-                        {% for good in goods %}
-                        <tr>
-                            <th scope="row"><i class="bi bi-box-seam-fill fs-4"></i></th>
-                            <th scope="row">{{ good.category}}</th>
-                            <td>{{ good.title }}</td>
-                            <td>{{ good.quantity }}</td>
-                            <td>{{ good.imported.date }}</td>
-                            <td>{{ good.provider}}</td>
-                            {% if request.user.is_authenticated and request.user.is_chief %}
-                                <td>{{ good.city.code}}</td>
-                            {% endif %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                {% endcache %}
+                <tbody>
+                    {% for good in goods %}
+                    <tr>
+                        <th scope="row"><i class="bi bi-box-seam-fill fs-4"></i></th>
+                        <th scope="row">{{ good.category}}</th>
+                        <td>{{ good.title }}</td>
+                        <td>{{ good.quantity }}</td>
+                        <td>{{ good.imported.date }}</td>
+                        <td>{{ good.provider}}</td>
+                        {% if request.user.is_authenticated and request.user.is_chief %}
+                            <td>{{ good.city.code}}</td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
             </table>
         </div>
     </div>

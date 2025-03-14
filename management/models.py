@@ -112,7 +112,6 @@ class Goods(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title)
-        super().save(*args, **kwargs)
         self.qrcode_created()
         return super().save(*args, **kwargs)
     

@@ -46,21 +46,16 @@ class GoodsStorageListView(LoginRequiredMixin, ListView):
     template_name = "management/goods/goods_storage.html"
     def get_queryset(self):
         user = self.request.user
-        goods = cache.get('goods_cache')
         if user.is_manager:
-            if not goods:
-                goods = Goods.objects\
-                                .filter(
-                                    (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
-                                    ).select_related('category','provider','city')
-                cache.set('goods_cache', goods, 20)
+            goods = Goods.objects\
+                            .filter(
+                                (Q(in_stock = True) & ~Q(quantity = 0)) & (Q(city = user.manager_user.storage) & Q(status_goods__name = 'AD'))
+                                ).select_related('category','provider','city')
         else:
-            if not goods:
-                goods = Goods.objects\
-                                .filter(
-                                    (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
-                                    ).select_related('category','city','provider')
-                cache.set('goods_cache', goods, 20)
+            goods = Goods.objects\
+                            .filter(
+                                (Q(in_stock = True) & ~Q(quantity = 0)) & Q(status_goods__name = 'AD')
+                                ).select_related('category','city','provider')
         return goods
     
     
@@ -123,16 +118,6 @@ class GoodsDeleteView(LoginRequiredMixin, DeleteView):
     pk_url_kwarg = 'goods_pk'
     
     
-def scan_goods(request, goods_slug, goods_pk, action):
-    good = get_object_or_404(Goods, slug = goods_slug, id = goods_pk)
-    if action == 'add':
-        good.quantity +=1
-    elif action == 'remove' and good.quantity > 0:
-        good.quantity -=1
-        replenish_goods.delay(good.id, request.user )
-        
-    good.save()
-    return JsonResponse({"massage":f"Product {good.title} updated","quantity":good.quantity})
 
 def add_storage(request, goods_slug, goods_pk):
     good = get_object_or_404(Goods, slug = goods_slug, id = goods_pk)
@@ -178,11 +163,8 @@ class CategoryUpdateView(CategoryFormMixin, UpdateView): pass
 class ProviderListView(ProviderMixin, ListView):
     context_object_name = 'providers'
     template_name = 'management/provider/provider_list.html'
-    def get_queryset(self):
-        provider = cache.get('provider')
-        if not provider:
-            provider = Provider.objects.only('id','name','agent','email','number')
-            cache.set('provider',provider)
+    def get_queryset(self):       
+        provider = Provider.objects.only('id','name','agent','email','number')
         return provider
 
 class ProviderDetailView(ProviderDataMixin, DetailView):

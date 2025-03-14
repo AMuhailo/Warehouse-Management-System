@@ -13,7 +13,7 @@ class GoodsCreateForm(forms.ModelForm):
         super(GoodsCreateForm, self).__init__(*args, **kwargs)
         if user.is_manager:
             manager = Manager.objects.get(user = user)
-            self.fields['city'].queryset = Storage.objects.filter(city = manager.storage.city, code = manager.storage.code)
+            self.fields['city'].queryset = Storage.objects.filter(city = manager.storage.city, code = manager.storage.code, state = manager.storage.state)
         else:
             self.fields['city'].queryset = Storage.objects.all()
             

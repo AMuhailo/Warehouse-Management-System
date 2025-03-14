@@ -37,7 +37,6 @@
                     </tr>
                     </tr>
                 </thead>
-                {% cache 600 goods_content goods %}
                     <tbody>
                         {% for good in goods %}
                             <tr>
@@ -68,7 +67,6 @@
                             </tr>
                         {% endfor %}
                     </tbody>
-                {% endcache %}
             </table>
         </div>
     </div>
