@@ -1,0 +1,89 @@
+## __📦🔧Warehouse Management System __
+![Django](https://img.shields.io/badge/Django-4.2-darkgreen?style=for-the-badge) ![Python](https://img.shields.io/badge/Python-3.12.9-blue?style=for-the-badge) ![Celery](https://img.shields.io/badge/Python-3.12.9-lightgreen?style=for-the-badge) ![Redis](https://img.shields.io/badge/Python-3.12.9-blue?style=for-the-badge)
+## Description project
+Warehouse Management System (WMS) is a system for warehouse management that allows you to add, edit and control products, categories, customers, managers and employees. The project implements CRUD operations, process automation via Celery & Redis, interactive updating of a number of products via QR codes, as well as an API based on the Django REST Framework.
+
+🚀Deploy on Railway
+The project has not yet been launched on Railway but will be launched.
+
+## 🚀 Functional
+✔️ Goods / Provider / Category(Goods/Workers) / Manager & Worker CRUD CRUD ✔️ Automatically changes the quantity of goods when placing an order ✔️ Automatically renew via Celery & Redis if the product is low  ✔️ Automatic notification about stock of goods ✔️ Adding and checking the quantity of goods using an additional QR code ✔️ Django REST Framework wiki for query processing ✔️ Updating a number of products by scanning a QR code ✔️ Export and import of data in CSV format ✔️ Possibility of attracting new products or lists of customers ✔️ Retrieving a list of products via API ✔️ CRUD operations for categories, post-owners and clients
+
+## 🛠️ Technologies
+- **Django**
+- **PostgreSQL**
+- **Celery + Redis**
+- **Celery**
+- **Django REST Framework (DRF)**
+- **CSV**
+
+## 📦 Installation and local launch
+1️⃣ Cloning the repository
+```bash
+git clone https://github.com/AMuhailo/Warehouse-Management-System.git
+cd Warehouse-Management-System.git
+```
+
+2️⃣ Virtual environment
+```bash
+python -m venv venv
+source venv/bin/activate # for macOS and Linux
+venv\Scripts\activate # for Windows
+```
+
+3️⃣ Installing dependencies
+```bash
+pip install -r requirements.txt
+```
+
+4️⃣ Setting Environment Variables
+To run locally, you need to create an .env file in the root folder:
+```bash
+ENVIRONMENT=development
+SECRET_KEY=your_secret_key
+DEBUG=True
+DATABASE_URL=your-url
+REDIS_URL=your-url
+```
+
+⚠️ Don`t upload .env to GitHub!
+It needs to be added to .gitignore.
+
+5️⃣ Starting the server
+```bash
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
+The site is now available at http://127.0.0.1:8000.
+
+## ⚡Launching Celery
+To allow Celery to run tasks in the background, start it like this:
+```bash
+docker pull redis
+docker run -it --rm --name redis -p 6973:6973 redis
+celery -A warehouse worker --loglevel=info
+```
+
+## 🔗 API endpoints 
+![🔗](http://127.0.0.1:8000/api/)
+![🔗](http://127.0.0.1:8000/api/management/)
+![🔗](http://127.0.0.1:8000/api/not-stock/)
+![🔗](http://127.0.0.1:8000/api/not-stock/{pk}/)
+![🔗](http://127.0.0.1:8000/api/scan-good/{goods_slug}/{goods_pk}/)
+
+## 🔗 Useful commands
+💾 Creating a database backup
+```bash
+python manage.py dumpdata --indent=2 --output=management/fixtures/db_backup.json
+```
+
+♻️ Database recovery
+```bash
+python manage.py loaddata db_backup.json
+```
+
+## 📩 Contacts
+If you have any questions, suggestions, problems with the project, ideas or proposals - please contact
+📧 Email: amuhailo25@gmail.com
+👨‍💻 GitHub: AMuhailo
