@@ -1,5 +1,5 @@
 ## __ 📦🔧Warehouse Management System __
-![Django](https://img.shields.io/badge/Django-4.2-darkgreen?style=for-the-badge) ![Python](https://img.shields.io/badge/Python-3.12.9-blue?style=for-the-badge) ![Celery](https://img.shields.io/badge/Python-3.12.9-lightgreen?style=for-the-badge) ![Redis](https://img.shields.io/badge/Python-3.12.9-blue?style=for-the-badge)
+![Django](https://img.shields.io/badge/Django-4.2-darkgreen?style=for-the-badge) ![Python](https://img.shields.io/badge/Python-3.12.9-blue?style=for-the-badge) ![Celery](https://img.shields.io/badge/Celery-5.4.0-lightgreen?style=for-the-badge) ![Redis](https://img.shields.io/badge/Redis-5.2.1-red?style=for-the-badge)
 ## Description project
 Warehouse Management System (WMS) is a system for warehouse management that allows you to add, edit and control products, categories, customers, managers and employees. The project implements CRUD operations, process automation via Celery & Redis, interactive updating of a number of products via QR codes, as well as an API based on the Django REST Framework.
 
@@ -66,11 +66,11 @@ celery -A warehouse worker --loglevel=info
 ```
 
 ## 🔗 API endpoints 
-![🔗](http://127.0.0.1:8000/api/)
-![🔗](http://127.0.0.1:8000/api/management/)
-![🔗](http://127.0.0.1:8000/api/not-stock/)
-![🔗](http://127.0.0.1:8000/api/not-stock/{pk}/)
-![🔗](http://127.0.0.1:8000/api/scan-good/{goods_slug}/{goods_pk}/)
+http://127.0.0.1:8000/api/
+http://127.0.0.1:8000/api/management/
+http://127.0.0.1:8000/api/not-stock/
+http://127.0.0.1:8000/api/not-stock/{pk}/
+http://127.0.0.1:8000/api/scan-good/{goods_slug}/{goods_pk}/
 
 ## 🔗 Useful commands
 💾 Creating a database backup
