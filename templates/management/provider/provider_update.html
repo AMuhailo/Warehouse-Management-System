@@ -11,9 +11,6 @@
                     <a class="nav-link text-dark" href="{% url 'manage:provider_detail_url' provider.name provider.id %}">Worker</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="#">Goods</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link text-dark active">Edit</a>
                 </li>
             </ul>
@@ -28,7 +25,11 @@
                         </h5>
                     </li>
                 </ul>
-                {% include "management/provider/provider_create.html" %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type='submit' class='btn btn-sm btn-success' value='Add Provider'>
+                </form>
             </p>
         </div>
     </div>

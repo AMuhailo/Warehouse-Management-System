@@ -1,5 +1,6 @@
 import csv
 from datetime import datetime
+from gc import get_objects
 from django.http import JsonResponse , HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
@@ -112,7 +113,11 @@ class GoodsUpdateView(GoodsDataMixin, UpdateView):
         update_goods.delay(goods.pk, cd)
         goods.save()
         return redirect('manage:goods_notstock_url')
-        
+    
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Goods, slug = self.kwargs.get('goods_slug'), id = self.kwargs.get('goods_pk'))
+
+
 class GoodsDeleteView(LoginRequiredMixin, DeleteView):
     model = Goods
     template_name = 'management/goods/goods_delete.html'
@@ -120,6 +125,8 @@ class GoodsDeleteView(LoginRequiredMixin, DeleteView):
     slug_url_kwarg = 'goods_slug'
     pk_url_kwarg = 'goods_pk'
     
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Goods, slug = self.kwargs.get('goods_slug'), sluidg = self.kwargs.get('goods_pk'))
     
 
 def add_storage(request, goods_slug, goods_pk):

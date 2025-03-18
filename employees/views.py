@@ -57,7 +57,10 @@ class WorkerCreateView(WorkerDataMixin, WorkerFilterMixin, CreateView):
         category = get_object_or_404(Category, title = 'trainee')
         worker = form.save(commit = False)
         worker.manager = cd['manager']
-        worker.organisation = user.manager_user.organisation
+        if user.is_manager:
+            worker.organisation = user.manager_user.organisation
+        else:
+            worker.organisation = user.profiles
         worker.category = category
         worker.save()
         return super().form_valid(form)
@@ -69,14 +72,20 @@ class WorkerUpdateView(WorkerDataMixin, WorkerFilterMixin, UpdateView):
     
     def get_success_url(self):
         return reverse('emp:worder_detail_url', args = [self.kwargs.get('worker_pk')])
-
+    
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Worker, pk = self.kwargs.get('worker_pk'))
 class WorkerDetailView(WorkerDataMixin, WorkerFilterMixin, DetailView):
     template_name = "employees/worker/worker_detail.html"
     
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Worker, pk = self.kwargs.get('worker_pk'))
    
 class WorkerDeleteView(WorkerDataMixin, WorkerFilterMixin, DeleteView):
     template_name = "employees/worker/worker_delete.html"
-
+    
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Worker, pk = self.kwargs.get('worker_pk'))
 
 class WorkerAsignFormView(FormView):
     template_name = "employees/worker/worker_asign.html"
@@ -138,8 +147,14 @@ class ManagerUpdateView(LoginRequiredMixin, ManagerDataMixin, UpdateView):
     def get_success_url(self):
         return reverse_lazy('emp:manager_detail_url', args = [self.kwargs.get('manager_pk')])
 
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Manager, pk = self.kwargs.get('manager_pk'))
+    
 class ManagerDetailView(LoginRequiredMixin, ManagerDataMixin, DetailView):
     template_name = "employees/manager/manager_detail.html"
+    
+    def get_object(self, queryset = ...):
+        return get_object_or_404(Manager, pk = self.kwargs.get('manager_pk'))
     
 def worker_csv(request):
     response = HttpResponse(content_type = 'text/csv')

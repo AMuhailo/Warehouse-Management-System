@@ -13,6 +13,9 @@
         {% endif %}
         {% if  request.user.is_chief %}
             <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{% url 'manage:goods_storage_url'%}">Storage</a>
+            </li>
+            <li class="nav-item">
                 <a class="nav-link" href="{% url 'manage:goods_notstock_url' %}">Not in stock</a>
             </li>
             <li class="nav-item">

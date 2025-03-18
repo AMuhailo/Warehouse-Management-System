@@ -50,9 +50,38 @@ class CategoryForm(forms.ModelForm):
     class Meta:
         model = Category
         fields = ['name']
+        widgets = {
+            'name':forms.TextInput(attrs={
+                'class':"form-control",
+                'placeholder':"Category....",
+                'aria-describedby':"button-addon2"
+            })
+        }
         
 
 class ProviderForm(forms.ModelForm):
     class Meta:
         model = Provider
         exclude = ['goods']
+        widgets = {
+            'name':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Name Company...'
+            }),
+            'location':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Location...'
+            }),
+            'agent':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Agent...'
+            }),
+            'email':forms.EmailInput(attrs={
+                'class':'form-control',
+                'placeholder':'Email...'
+            }),
+            'number':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'000-123-1234...'
+            }),
+        }
