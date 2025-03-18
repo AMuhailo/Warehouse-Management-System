@@ -24,7 +24,29 @@ class WorkerCreateForm(forms.ModelForm):
     class Meta:
         model = Worker
         exclude = ['organisation','category']
-    
+        widgets = {
+            'first_name':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'First name...'
+            }),
+            'last_name':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Last name...'
+            }),
+            'age':forms.NumberInput(attrs={
+                'class':'form-control',
+            }),
+            'phone':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'000-111-1234'
+            }),
+            'storage':forms.Select(attrs={
+                'class':'form-select'
+            }),
+            'manager':forms.Select(attrs={
+                'class':'form-select'
+            }),
+        }
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
         super(WorkerCreateForm, self).__init__(*args, **kwargs)
@@ -38,7 +60,7 @@ class WorkerCreateForm(forms.ModelForm):
             
             
 class AsignWorkerManager(forms.Form):
-    manager = forms.ModelChoiceField(queryset = Manager.objects.none())
+    manager = forms.ModelChoiceField(queryset = Manager.objects.none(), widget = forms.Select(attrs={'class':'form-select'}))
 
     def __init__(self, *args, **kwargs):
         request = kwargs.pop('request')
@@ -53,15 +75,48 @@ class ManagerCreateForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username','first_name','last_name','email','storage']
-        
+        widgets = {
+            'username':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Username...'
+            }),
+            'first_name':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'First name...'
+            }),
+            'last_name':forms.TextInput(attrs={
+                'class':'form-control',
+                'placeholder':'Last name...'
+            }),
+            'email':forms.EmailInput(attrs={
+                'class':'form-control',
+                'placeholder':'Email...'
+            }),
+            'storage':forms.Select(attrs={
+                'class':'form-select'
+            }),
+        }
         
 class ManagerUpdateForm(forms.ModelForm):
     class Meta:
         model = Manager
         exclude = ['organisation']
+        widgets = {
+            'user':forms.Select(attrs={
+                'class':'form-select'
+            }),
+            'storage':forms.Select(attrs={
+                'class':'form-select'
+            }),
+        }
         
         
 class CategoryUpdateForm(forms.ModelForm):
     class Meta:
         model = Worker
         fields = ['category']
+        widgets = {
+            'category':forms.Select(attrs={
+                'class':'form-select'
+            }),
+        }

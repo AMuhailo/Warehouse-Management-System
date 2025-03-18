@@ -4,7 +4,7 @@ from django.http import JsonResponse , HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
-from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView
+from django.views.generic import CreateView, ListView, UpdateView, DeleteView, DetailView, TemplateView
 from django.db.models import Count
 from django.db.models import Q
 from management.utils import GoodsDataMixin, CategoryMixin, CategoryDataMixin, CategoryFormMixin, ProviderMixin, ProviderDataMixin
@@ -14,6 +14,10 @@ from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, Pro
 
 
 # Create your views here.
+class DashboardView(TemplateView):
+    template_name = 'home.html'
+
+
 class GoodsCreateView(LoginRequiredMixin, CreateView):
     model = Goods
     template_name = "management/goods/goods_create.html"

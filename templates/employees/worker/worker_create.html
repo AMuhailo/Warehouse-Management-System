@@ -1,13 +1,19 @@
-{% if worker %}
-    <form method = 'POST'>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type='submit' value="Update Worker"/>
-    </form>
-{% else %}
-    <form method = 'POST'>
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type='submit' value="Add Worker"/>
-    </form>
-{% endif %}
+{% extends "base.html" %}
+
+{% block title %} Created Worker {% endblock title %}
+
+{% block content %}
+<div class="content-detail container w-25">
+    <div class="align-items-center p-3">
+        <div class="my-3">
+            <a href="{% url 'emp:worker_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+            <h5 class="text-uppercase">Created Worker</h5>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type='submit' class='btn btn-sm btn-success' value='Add worker'>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

@@ -8,12 +8,12 @@
             </span>
             <form action="{% url 'logout'%}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-outline-primary">Logout</button>
+                <button type="submit" class="rounded px-3 py-1 btn-logout text-white">Logout</button>
             </form>
         {% else %}
             <form action="{% url 'login'%}" method="post">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-primary">Login</button>
+                <button type="submit" class="rounded px-3 py-1 btn-login text-white">Login</button>
             </form>
         {% endif %}
         </div>

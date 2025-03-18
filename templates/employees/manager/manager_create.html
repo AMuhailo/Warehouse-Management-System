@@ -1,9 +1,19 @@
-<form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    {% if manager %}
-        <input type='submit' class='btn btn-sm btn-primary' value='Update manager'>
-    {% else %}
-        <input type='submit' class='btn btn-sm btn-success' value='Add manager'>
-    {% endif %}
-</form>
+{% extends "base.html" %}
+
+{% block title %} Created Manager {% endblock title %}
+
+{% block content %}
+<div class="content-detail container w-25">
+    <div class="align-items-center p-3">
+        <div class="my-3">
+            <a href="{% url 'emp:manager_list_url'%}" class="text-decoration-none"><i class="bi bi-arrow-bar-left"></i></a>
+            <h5 class="text-uppercase">Created Manager</h5>
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type='submit' class='btn btn-sm btn-success' value='Add manager'>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

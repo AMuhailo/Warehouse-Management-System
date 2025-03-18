@@ -14,9 +14,6 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark active">Update</a>
                     </li>
-                    <li class="nav-item  ms-auto">
-                        <a class="nav-link text-dark" href="#">Task</a>
-                    </li>
                 </ul>
             </div>
             <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
@@ -31,7 +28,11 @@
                             </h5>
                         </li>
                     </ul>
-                    {% include "employees/manager/manager_create.html" %}
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <input type='submit' class='btn btn-sm btn-primary' value='Update manager'>
+                    </form>
                 </p>
             </div>
         </div>

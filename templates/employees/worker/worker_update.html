@@ -28,7 +28,11 @@
                         </h5>
                     </li>
                 </ul>
-                {% include "employees/worker/worker_create.html" %}
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <input type='submit' class='btn btn-sm btn-warning' value='Update worker'>
+                </form>
             </p>
         </div>
     </div>
