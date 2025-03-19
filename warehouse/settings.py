@@ -35,7 +35,8 @@ if ENVIRONMENT == 'local':
 else:
     DEBUG = False
     
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost','https://warehouse-system.up.railway.app/','warehouse-system.up.railway.app/']
+CSRF_TRUSTED_ORIGINS = ['https://warehouse-system.up.railway.app/']
 
 
 # Application definition
