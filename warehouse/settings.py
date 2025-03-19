@@ -18,7 +18,7 @@ import dj_database_url
 env = Env()
 Env.read_env()
 ENVIRONMENT = env('ENVIRONMENT', default = 'local')
-
+ENVIRONMENT = 'prod'
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -35,8 +35,8 @@ if ENVIRONMENT == 'local':
 else:
     DEBUG = False
     
-ALLOWED_HOSTS = ['localhost','https://warehouse-system.up.railway.app/','warehouse-system.up.railway.app/']
-CSRF_TRUSTED_ORIGINS = ['https://warehouse-system.up.railway.app/']
+ALLOWED_HOSTS = ['127.0.0.1','localhost','warehouse-management.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['https://warehouse-management.up.railway.app']
 
 
 # Application definition

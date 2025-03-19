@@ -31,7 +31,7 @@ services:
       - .:/code
     env_file: ./warehouse/.env
     ports:
-      - "8001:8000"
+      - "8000:8000"
     command: python manage.py runserver 0.0.0.0:8000
     environment:
       - DJANGO_SETTINGS_MODULE=warehouse.settings
