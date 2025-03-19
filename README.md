@@ -8,7 +8,7 @@ Warehouse Management System (WMS) is a warehouse management system that allows y
 🚀Deploy on Railway The project is deployed on Railway. To check the operation of the site, go to the link: 🔗[Warehouse management](https://warehouse-management.up.railway.app/)
 
 ## 🚀 Functional
-✔️ Goods / Provider / Category(Goods/Workers) / Manager & Worker CRUD CRUD ✔️ Automatically changes the quantity of goods when placing an order ✔️ Automatically renew via Celery & Redis if the product is low  ✔️ Automatic notification about stock of goods ✔️ Adding and checking the quantity of goods using an additional QR code ✔️ Django REST Framework wiki for query processing ✔️ Updating a number of products by scanning a QR code ✔️ Export and import of data in CSV format ✔️ Possibility of attracting new products or lists of customers ✔️ Retrieving a list of products via API ✔️ CRUD operations for categories, post-owners and clients ✔️ Docker Images 
+✔️ Products / Supplier / Category (Products/Employees) / Manager and Employee CRUD ✔️ Automatically change product quantity when placing an order ✔️ Automatically continue via Celery & Redis if the product is low ✔️ Automatic product stock notification ✔️ Add and check product quantity using additional QR code ✔️ Django REST Framework for query processing ✔️ Update a range of products by scanning a QR code ✔️ Export and import data in CSV format ✔️ Get product list via API ✔️ CRUD operations for categories, post owners and customers ✔️ Docker images ✔️ Password reset via Email
 
 ## 🛠️ Technologies
 - **Django**
@@ -74,7 +74,6 @@ http://127.0.0.1:8000/api/not-stock/
 http://127.0.0.1:8000/api/not-stock/{pk}/
 http://127.0.0.1:8000/api/scan-good/{goods_slug}/{goods_pk}/
 
-[Docker](https://img.shields.io/badge/Docker-27.4.0-blue?style=for-the-badge)
 ##  📋 Prerequisites 
 Ensure you have the following installed:
 - **Docker**

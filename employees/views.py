@@ -136,8 +136,8 @@ class ManagerCreateView(LoginRequiredMixin, ManagerMixin, CreateView):
         manager.is_manager = True
         manager.is_chief = False
         manager.save()
-        manager = Manager.objects.create(user = manager, organisation = self.request.user.profiles, storage = cd['storage'])
-        added_to_manager.delay(manager.user)
+        Manager.objects.create(user = manager, organisation = self.request.user.profiles, storage = cd['storage'])
+        added_to_manager.delay(manager)
         return super().form_valid(form)
     
     
