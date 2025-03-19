@@ -9,8 +9,8 @@ from django.views.generic import CreateView, UpdateView, ListView, DetailView, D
 from employees.utils import WorkerDataMixin, WorkerFilterMixin, ManagerDataMixin, ManagerMixin
 from employees.forms import ManagerCreateForm, ManagerUpdateForm, RegisterForm, WorkerCreateForm, AsignWorkerManager, CategoryUpdateForm
 from employees.models import Category, Worker, Manager
+from employees.tasks import added_to_manager
 from management.models import Storage
-
 # Create your views here
 
 User = get_user_model()
@@ -136,7 +136,8 @@ class ManagerCreateView(LoginRequiredMixin, ManagerMixin, CreateView):
         manager.is_manager = True
         manager.is_chief = False
         manager.save()
-        Manager.objects.create(user = manager, organisation = self.request.user.profiles, storage = cd['storage'])
+        manager = Manager.objects.create(user = manager, organisation = self.request.user.profiles, storage = cd['storage'])
+        added_to_manager.delay(manager.user)
         return super().form_valid(form)
     
     
