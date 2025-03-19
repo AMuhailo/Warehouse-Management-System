@@ -74,7 +74,8 @@ http://127.0.0.1:8000/api/not-stock/
 http://127.0.0.1:8000/api/not-stock/{pk}/
 http://127.0.0.1:8000/api/scan-good/{goods_slug}/{goods_pk}/
 
-## [Docker](https://img.shields.io/badge/Docker-27.4.0-blue?style=for-the-badge) 📋 Prerequisites 
+[Docker](https://img.shields.io/badge/Docker-27.4.0-blue?style=for-the-badge)
+##  📋 Prerequisites 
 Ensure you have the following installed:
 - **Docker**
 - **Docker Compose**
