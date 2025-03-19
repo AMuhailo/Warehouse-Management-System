@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Log in to GitHub Container Registry
-        run: echo "${{ secrets.WARE_PAT }}" | docker login ghcr.io --username amuhailo --password-stdin
+        run: echo "${{ secrets.PAT }}" | docker login ghcr.io --username amuhailo --password-stdin
 
       - name: Build Docker Image
         run: docker build . -t ghcr.io/amuhailo/warehousemanagementsystem:latest
