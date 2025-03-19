@@ -14,9 +14,11 @@ import dj_database_url
 from pathlib import Path
 
 from environ import Env
-
+import dj_database_url
 env = Env()
 Env.read_env()
+ENVIRONMENT = env('ENVIRONMENT', default = 'local')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,9 +30,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY', default = 'your_secret_key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+if ENVIRONMENT == 'local':
+    DEBUG = True
+else:
+    DEBUG = False
+    
+ALLOWED_HOSTS = ['localhost']
 
-ALLOWED_HOSTS = []
 
 # Application definition
 INTERNAL_IPS = [
@@ -67,6 +73,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,11 +109,17 @@ WSGI_APPLICATION = 'warehouse.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD':'postgres',
+        'HOST': 'postgres',
+        'PORT':5432,
     }
 }
-
+if ENVIRONMENT == 'prod':
+    DATABASES['default'] = dj_database_url.parse(env("DATABASE_URL"))
+    REDIS_URL = env("REDIS_URL")
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -144,6 +157,8 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR ,'static')]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -163,7 +178,10 @@ LOGOUT_REDIRECT_URL = 'login'
 CELERY_TIMEZONE = "Australia/Tasmania"
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
+if ENVIRONMENT == 'local':
+    CELERY_BROKER_URL = 'redis://redis:6379/0'
+else:
+    CELERY_BROKER_URL = env("REDIS_URL")
 CELERY_BROCKER_CONNECTION_RETRY_ON_STARTUP = True
 CELERY_TIMEZONE = "UTC"
 
