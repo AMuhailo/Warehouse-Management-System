@@ -167,7 +167,13 @@ MEDIA_ROOT = BASE_DIR / 'media'
 AUTH_USER_MODEL = 'employees.User'
 
 # Create email
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = env('EMAIL_HOST', default='your-host')
+EMAIL_HOST_PASSWORD = env('EMAIL_HOST_PASSWORD', default='your-user-password')
+EMAIL_HOST_USER = env('EMAIL_HOST_USER', default='your-user-host')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
 
 #AUTHENTICATED
 LOGIN_URL = 'login'

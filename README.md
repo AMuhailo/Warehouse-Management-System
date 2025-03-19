@@ -46,6 +46,9 @@ ENVIRONMENT=local
 SECRET_KEY=your_secret_key
 DATABASE_URL=your-url
 REDIS_URL=your-url
+EMAIL_HOST=your-host
+EMAIL_HOST_USER=your-user-email
+EMAIL_HOST_PASSWORD=your-user-password
 ```
 
 ⚠️ Don`t upload .env to GitHub!
