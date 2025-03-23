@@ -25,3 +25,12 @@ def update_goods(good_id, quantity):
     subject = f"Order in store"
     message = f"Please send the product {good.title} in the amount of {quantity} pieces to the city of {good.city.city} {good.city.state} {good.city.street}. Thank you."
     return send_mail(subject, message, manager.user.email, [good.provider.email])
+
+
+@shared_task
+def notstock_goods(goods_id, user_id):
+    manager = Manager.objects.get(id = user_id)
+    goods = Goods.objects.filter(id__in = goods_id).select_related('category','city','provider')
+    subject = f"Results of the day"        
+    message = f"Goods that have expired after the working day {[f"\n{good.title}" for good in goods]}"
+    return send_mail(subject, message, 'storage@gmail.com', [manager.user.email])

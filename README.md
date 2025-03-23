@@ -3,12 +3,12 @@
 
 
 ## Description project
-Warehouse Management System (WMS) is a warehouse management system that allows you to add, edit and control products, categories, customers, managers and employees. The project implements CRUD operations, process automation via Celery & Redis, interactive updating of a number of products via QR codes, as well as an API based on the Django REST Framework. Creating a Docker Container for optimization and deployment on RailWay.
+Warehouse Management System (WMS) is a warehouse management system that allows you to add, edit and control products, categories, customers, managers and employees. The project implements CRUD operations, process automation via Celery & Redis, interactive updating of a number of products via QR codes, as well as an API based on the Django REST Framework. AWS S3 system for storing media files. Creating a Docker Container for optimization and deployment on RailWay.
 
 🚀Deploy on Railway The project is deployed on Railway. To check the operation of the site, go to the link: 🔗[Warehouse management](https://warehouse-management.up.railway.app/)
 
 ## 🚀 Functional
-✔️ Products / Supplier / Category (Products/Employees) / Manager and Employee CRUD ✔️ Automatically change product quantity when placing an order ✔️ Automatically continue via Celery & Redis if the product is low ✔️ Automatic product stock notification ✔️ Add and check product quantity using additional QR code ✔️ Django REST Framework for query processing ✔️ Update a range of products by scanning a QR code ✔️ Export and import data in CSV format ✔️ Get product list via API ✔️ CRUD operations for categories, post owners and customers ✔️ Docker images ✔️ Password reset via Email
+✔️ Products / Supplier / Category (Products/Employees) / Manager and Employee CRUD ✔️ Automatically change product quantity when placing an order ✔️ Automatically continue via Celery & Redis if the product is low ✔️ Automatic product stock notification ✔️ Add and check product quantity using additional QR code ✔️ Django REST Framework for query processing ✔️ Update a range of products by scanning a QR code ✔️ Export and import data in CSV format ✔️ Get product list via API ✔️ CRUD operations for categories, post owners and customers ✔️ Docker images ✔️ AWS S3 ✔️ Password reset via Email
 
 ## 🛠️ Technologies
 - **Django**
@@ -18,6 +18,7 @@ Warehouse Management System (WMS) is a warehouse management system that allows y
 - **Django REST Framework (DRF)**
 - **CSV**
 - **Docker + Docker Container**
+- **AWS S3**
 - **Railway Deploy**
 
 ## 📦 Installation and local launch
@@ -49,6 +50,9 @@ REDIS_URL=your-url
 EMAIL_HOST=your-host
 EMAIL_HOST_USER=your-user-email
 EMAIL_HOST_PASSWORD=your-user-password
+AWS_ACCESS_KEY_ID=your-aws-key
+AWS_SECRET_ACCESS_KEY=your-aws-secret-key
+AWS_STORAGE_BUCKET_NAME=your-aws-name
 ```
 
 ⚠️ Don`t upload .env to GitHub!

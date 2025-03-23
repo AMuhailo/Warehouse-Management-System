@@ -10,7 +10,7 @@ from django.db.models import Count
 from django.db.models import Q
 from management.utils import GoodsDataMixin, CategoryMixin, CategoryDataMixin, CategoryFormMixin, ProviderMixin, ProviderDataMixin
 from management.models import Status, Category, Goods, Provider, Storage
-from management.tasks import replenish_goods, update_goods
+from management.tasks import replenish_goods, update_goods, notstock_goods
 from management.forms import GoodsCreateForm, GoodsUpdateForm, CategoryForm, ProviderForm
 
 
@@ -76,12 +76,13 @@ class GoodsNotStockListView(LoginRequiredMixin, ListView):
                                 & 
                                 (Q(city = user.manager_user.storage) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD')))
                                 ).select_related('category','city','provider').prefetch_related("status_goods")
+            notstock_goods.delay(list(goods.values_list('id',flat = True)), user.id)
         else:
             goods = Goods.objects\
                             .filter(
                                 (Q(in_stock = False) | Q(quantity = 0)) | (Q(status_goods__name = 'MS') | Q(status_goods__name = 'SD'))
                                 ).select_related('category','city','provider').prefetch_related("status_goods")
-                 
+            notstock_goods.delay(list(goods.values_list('id',flat = True)), user.id)
         return goods
     
     def get_context_data(self, **kwargs):

@@ -65,10 +65,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     "debug_toolbar",
     'rest_framework',
+    'django_celery_beat',
     'management.apps.ManagementConfig',
     'employees.apps.EmployeesConfig',
     'orders.apps.OrdersConfig',
     'api.apps.ApiConfig',
+    'storages',
 ]
 
 MIDDLEWARE = [
@@ -161,7 +163,24 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR ,'static')]
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 MEDIA_URL = 'media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if ENVIRONMENT == "prod":
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3.S3Storage",
+            },
+        'staticfiles':{
+            "BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'
+            }
+    }
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_LOCATION = 'media'
+    AWS_LOCATION = 'media'
+else: 
+
+    MEDIA_ROOT = BASE_DIR / 'media'
 
 # Create user abstract
 AUTH_USER_MODEL = 'employees.User'

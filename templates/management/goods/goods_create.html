@@ -7,7 +7,7 @@
     <div class="row card text-center">
         <div class="col-lg-12 col-sm-6 col-md-12 card-body text-start">
             <p class="card-text d-flex flex-column">
-                <form active = "{% url 'manage:goods_created_url'%}" method = 'POST'>
+                <form active = "{% url 'manage:goods_created_url'%}" method = 'POST' enctype="multipart/form-data">
                     {% csrf_token %}
                     {{ form.as_p }}
                     <input type='submit' value='Add' class='btn btn-sm btn-primary'>
